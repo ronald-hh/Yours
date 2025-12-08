@@ -817,11 +817,12 @@
         let isReadOnly = false;
 
         // Correct answers
+        // Change the correct answers to be more flexible:
         const CORRECT_ANSWERS = {
             1: '6.5',
             2: 'Can I be him',
-            3: '', // No wrong answer
-            4: '', // No wrong answer, free response
+            3: ['Yes', 'No'], // Accept both answers for puzzle 3
+            4: 'Excited', // Accept any non-empty answer for puzzle 4
             5: 'Being with you'
         };
 
@@ -1573,22 +1574,31 @@
                     option.addEventListener('click', async function() {
                         const userAnswer = this.dataset.answer;
 
-                        // Mark as completed (no wrong answer)
-                        this.classList.add('correct 🙂‍↕️');
-                        completedPuzzles[2] = true;
-                        options.forEach(opt => opt.disabled = true);
+                        // Check if answer is valid (Yes or No)
+                        const isValid = userAnswer === 'Yes' || userAnswer === 'No';
 
-                        // Save answer to Supabase
-                        await saveAnswerToSupabase(3, {
-                            answer: userAnswer,
-                            correct: true, // Always correct for this question
-                            attempts: 1,
-                            reason: husbandReason ? husbandReason.value : ''
-                        });
+                        if (isValid) {
+                            // Mark as completed (no wrong answer for this question)
+                            this.classList.add('correct');
+                            completedPuzzles[2] = true;
+                            options.forEach(opt => opt.disabled = true);
 
-                        // Update progress
-                        updateProgress();
-                        showFeedback(3, true, 1);
+                            // Save answer to Supabase
+                            await saveAnswerToSupabase(3, {
+                                answer: userAnswer,
+                                correct: true,
+                                attempts: 1,
+                                reason: husbandReason ? husbandReason.value : ''
+                            });
+
+                            // Update progress
+                            updateProgress();
+                            showFeedback(3, true, 1);
+                        } else {
+                            // This shouldn't happen but just in case
+                            this.classList.add('wrong');
+                            showFeedback(3, false, 1);
+                        }
                     });
                 });
 
@@ -1600,6 +1610,7 @@
                     });
                 }
             }
+
 
             // Setup Puzzle 4 (Feeling question)
             function setupPuzzle4() {
@@ -1613,13 +1624,14 @@
 
                 checkFeeling.addEventListener('click', async function() {
                     const userAnswer = feelingInput.value.trim();
+
                     if (!userAnswer) {
                         showFeedback(4, false, 0);
                         return;
                     }
 
-                    // Mark as completed (no wrong answer, but must have input)
-                    feelingInput.classList.add('correct 🙂‍↕️');
+                    // Mark as completed (accept any non-empty answer)
+                    feelingInput.classList.add('correct');
                     feelingInput.disabled = true;
                     checkFeeling.disabled = true;
                     completedPuzzles[3] = true;
@@ -1627,7 +1639,7 @@
                     // Save answer to Supabase
                     await saveAnswerToSupabase(4, {
                         answer: userAnswer,
-                        correct: true, // Always correct for this question
+                        correct: true,
                         attempts: 1
                     });
 
@@ -1660,16 +1672,24 @@
 
                 options.forEach(option => {
                     option.addEventListener('click', async function() {
+                        if (this.disabled) return;
+
                         const userAnswer = this.dataset.answer;
                         const isCorrect = userAnswer === CORRECT_ANSWERS[5];
 
+                        console.log('Puzzle 5 answer check:', {
+                            userAnswer,
+                            correctAnswer: CORRECT_ANSWERS[5],
+                            isCorrect
+                        });
+
                         if (isCorrect) {
                             // Correct answer
-                            this.classList.add('correct 🙂‍↕️');
+                            this.classList.add('correct');
                             completedPuzzles[4] = true;
                             options.forEach(opt => opt.disabled = true);
 
-                            // Update consecutive counter (internally only)
+                            // Update consecutive counter
                             consecutiveCorrect++;
 
                             // Save answer to Supabase
@@ -1682,6 +1702,8 @@
                             // Update progress
                             updateProgress();
                             showFeedback(5, true, 1);
+
+                            console.log('Puzzle 5 completed!');
                         } else {
                             // Wrong answer
                             this.classList.add('wrong');
@@ -1998,6 +2020,7 @@
                             songPlayed = true;
                         }
                         // Restore puzzle 3 (husband question)
+                        // Restore puzzle 3 (husband question) - FIXED
                         else if (puzzleNum === 3) {
                             const options = document.querySelectorAll('#puzzle3 .option');
                             const husbandReason = document.getElementById('husbandReason');
