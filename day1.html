@@ -1250,18 +1250,42 @@
             }
 
             // Setup word scramble puzzle - SIMPLIFIED like Day 5
+            // Setup word scramble puzzle - FIXED VERSION
             function setupWordScramble() {
                 const letterInputs = document.querySelectorAll('.letter');
                 const checkWordBtn = document.getElementById('checkWord');
 
                 if (!letterInputs.length || !checkWordBtn) {
-                    console.error('Nope');
+                    console.error('Word scramble elements not found');
                     return;
                 }
+
+                // Add auto-focus and navigation between inputs
+                letterInputs.forEach((input, index) => {
+                    input.addEventListener('input', function() {
+                        // Auto-focus next input
+                        if (this.value.length === 1 && index < letterInputs.length - 1) {
+                            letterInputs[index + 1].focus();
+                        }
+                    });
+
+                    input.addEventListener('keydown', function(e) {
+                        // Navigate with arrow keys
+                        if (e.key === 'ArrowLeft' && index > 0) {
+                            letterInputs[index - 1].focus();
+                        } else if (e.key === 'ArrowRight' && index < letterInputs.length - 1) {
+                            letterInputs[index + 1].focus();
+                        } else if (e.key === 'Backspace' && !this.value && index > 0) {
+                            letterInputs[index - 1].focus();
+                        }
+                    });
+                });
 
                 checkWordBtn.addEventListener('click', async function() {
                     // Get the word from inputs
                     const word = Array.from(letterInputs).map(input => input.value).join('').toUpperCase();
+                    console.log('Checking word:', word, 'Expected:', CORRECT_ANSWERS[5]);
+
                     if (word.length !== 5) {
                         showFeedback(5, false, 0);
                         return;
@@ -1270,9 +1294,9 @@
                     const isCorrect = word === CORRECT_ANSWERS[5];
 
                     if (isCorrect) {
-                        // Correct answer - SIMPLIFIED like Day 5
+                        // Correct answer
                         letterInputs.forEach(input => {
-                            input.classList.add('correct 😁');
+                            input.classList.add('correct');
                             input.disabled = true;
                         });
                         checkWordBtn.disabled = true;
@@ -1287,10 +1311,10 @@
 
                         // Update progress
                         updateProgress();
-                        showFeedback(5, true, 1); // Changed to "Good" like Day 5
+                        showFeedback(5, true, 1);
                     } else {
-                        // Wrong answer - SIMPLIFIED like Day 5
-                        letterInputs.forEach(input => input.classList.add('wrong 😭'));
+                        // Wrong answer
+                        letterInputs.forEach(input => input.classList.add('wrong'));
 
                         // Save attempt to Supabase
                         await saveAnswerToSupabase(5, {
@@ -1302,7 +1326,7 @@
                         // Clear inputs after delay
                         setTimeout(() => {
                             letterInputs.forEach(input => {
-                                input.classList.remove('wrong 😭');
+                                input.classList.remove('wrong');
                                 input.value = '';
                             });
                             letterInputs[0].focus();
@@ -1312,14 +1336,38 @@
                     }
                 });
 
-                // Enter key support
-                letterInputs.forEach(input => {
+                // Enter key support - improved
+                letterInputs.forEach((input, index) => {
                     input.addEventListener('keypress', function(e) {
                         if (e.key === 'Enter') {
-                            checkWordBtn.click();
+                            if (index === letterInputs.length - 1 || letterInputs[index + 1].disabled) {
+                                // Last input or next is disabled, check the word
+                                checkWordBtn.click();
+                            } else {
+                                // Move to next input
+                                letterInputs[index + 1].focus();
+                            }
                         }
                     });
                 });
+
+                // Focus first input on puzzle load
+                const puzzle5 = document.getElementById('puzzle5');
+                if (puzzle5) {
+                    const observer = new MutationObserver(function() {
+                        if (puzzle5.classList.contains('active')) {
+                            setTimeout(() => {
+                                if (!letterInputs[0].disabled) {
+                                    letterInputs[0].focus();
+                                }
+                            }, 100);
+                        }
+                    });
+                    observer.observe(puzzle5, {
+                        attributes: true,
+                        attributeFilter: ['class']
+                    });
+                }
             }
 
             // Show feedback message - CHANGED TO MATCH DAY 5
