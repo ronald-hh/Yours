@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do you like to being challenged?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffafcc 0%, #ffc8dd 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #ff4081;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .heart {
+            color: #ff4081;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+        }
+        
+        @keyframes heartbeat {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .login-form {
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 18px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff4081;
+            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.1);
+        }
+        
+        .hint {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .hint span {
+            color: #ff4081;
+            font-weight: 600;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6b9d, #ff4081);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
+        }
+        
+        .error-message {
+            color: #ff3b30;
+            margin-top: 15px;
+            min-height: 20px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            display: none;
+        }
+        
+        .secret-clue {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            color: #856404;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .secret-clue h4 {
+            color: #ff4081;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .secret-clue ul {
+            text-align: left;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .secret-clue li {
+            margin-bottom: 8px;
+        }
+        
+        .db-status {
+            background: #e3f2fd;
+            border: 2px solid #bbdefb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #1565c0;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #ff4081;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        
+        @keyframes bounce {
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 25px;
+            }
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="logo">
+                <h1>Our Journey <span class="heart">💖</span></h1>
+                <p>A 7-day challenge about me </p>
+            </div>
+
+            <div class="db-status" id="dbStatus">
+                🔄 Connecting to database...
+            </div>
+
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your special username" autocomplete="off">
+                    <div class="hint">Hint: <span>Your favorite name 😌</span></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your secret password">
+                    <div class="hint">Hint: <span>My name, you should consider trying both 😎 </span></div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="loading-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <button class="login-btn" id="loginBtn">Enter Our Journey</button>
+            </div>
+
+            <div class="secret-clue">
+                <h4>🧩 Secret Clues:</h4>
+                <p>This is made for you</p>
+                <>
+                    <li>While answering this you are not allowed to cheat or ask unless stated otherwise </li>
+                    <li>DON'T YOU DARE GET ANY ANSWER WRONG</li>
+                    <li>Take your time and think carefully about each question</li>
+                    <li>I know you got this 😊 </li>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://yqxrsigblsalvhndfvvs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxeHJzaWdibHNhbHZobmRmdnZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDUwNjQsImV4cCI6MjA4MDYyMTA2NH0.gsj4ya1LMKNtWGdwhaDa91L81AdOc6E1BcBd2gwXcJc';
+
+        let supabase;
+        let dbConnected = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const loading = document.getElementById('loading');
+            const dbStatus = document.getElementById('dbStatus');
+
+            // Initialize Supabase
+            initSupabase();
+
+            // Auto-focus username field
+            usernameInput.focus();
+
+            // Login button click
+            loginBtn.addEventListener('click', login);
+
+            // Enter key support
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+
+            // Clear error when typing
+            usernameInput.addEventListener('input', clearError);
+            passwordInput.addEventListener('input', clearError);
+
+            // Initialize Supabase
+            function initSupabase() {
+                try {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('Supabase initialized');
+
+                    // Test connection
+                    testConnection();
+                } catch (error) {
+                    console.error('Failed to initialize Supabase:', error);
+                    showError('Database connection failed. Please refresh.');
+                }
+            }
+
+            // Test database connection
+            async function testConnection() {
+                try {
+                    dbStatus.style.display = 'block';
+                    dbStatus.textContent = '🔄 Connecting to database...';
+
+                    const {
+                        data,
+                        error
+                    } = await supabase
+                        .from('users')
+                        .select('count', {
+                            count: 'exact',
+                            head: true
+                        });
+
+                    if (error) {
+                        if (error.code === '42P01') {
+                            dbStatus.innerHTML = '❌ Database tables not found.<br>Please run the SQL in Supabase SQL Editor.';
+                        } else {
+                            dbStatus.textContent = '⚠️ Database error: ' + error.message;
+                        }
+                    } else {
+                        dbConnected = true;
+                        dbStatus.textContent = '✅ Database connected!';
+                        dbStatus.style.background = '#d4edda';
+                        dbStatus.style.borderColor = '#c3e6cb';
+                        dbStatus.style.color = '#155724';
+
+                        setTimeout(() => {
+                            dbStatus.style.display = 'none';
+                        }, 3000);
+                    }
+                } catch (error) {
+                    console.error('Connection test failed:', error);
+                    dbStatus.textContent = '❌ Cannot connect to database';
+                }
+            }
+
+            async function login() {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                console.log('Login attempt:', {
+                    username,
+                    password
+                });
+
+                // Validate inputs
+                if (!username || !password) {
+                    showError('Please enter both username and password');
+                    return;
+                }
+
+                if (!dbConnected) {
+                    showError('Database not connected. Please try again. Or inform the administrator. 😂');
+                    return;
+                }
+
+                // Show loading
+                showLoading(true);
+
+                try {
+                    // Check user credentials in database
+                    const {
+                        data: user,
+                        error: userError
+                    } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('username', username)
+                        .eq('password', password)
+                        .single();
+
+                    console.log('User query result:', {
+                        user,
+                        userError
+                    });
+
+                    if (userError || !user) {
+                        showLoading(false);
+                        showError('Incorrect username or password. You wanna miss out? 😂');
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                        return;
+                    }
+
+                    console.log('User found:', user);
+
+                    // Create user session - SESSION STORAGE ONLY (will clear when tab closes)
+                    createUserSession(user);
+
+                    // Initialize user progress if needed
+                    await initializeUserProgress(user.id, user.is_jessica);
+
+                    // Redirect to dashboard
+                    showLoading(false);
+                    redirectToDashboard();
+
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showLoading(false);
+                    showError('Login failed. Please try again.');
+                }
+            }
+
+            function createUserSession(user) {
+                console.log('Creating session for user:', user.username);
+
+                // Create session object
+                const userSession = {
+                    id: user.id,
+                    username: user.username,
+                    is_jessica: user.is_jessica,
+                    timestamp: Date.now()
+                };
+
+                // SAVE TO SESSIONSTORAGE ONLY - will auto-clear when tab closes
+                sessionStorage.setItem('currentUser', JSON.stringify(userSession));
+
+                console.log('Session saved to sessionStorage (will auto-clear on tab close)');
+            }
+
+            async function initializeUserProgress(userId, isJessica) {
+                try {
+                    console.log('Initializing progress for user:', userId);
+
+                    // Check if user already has progress for Day 1
+                    const {
+                        data: existingProgress,
+                        error: progressError
+                    } = await supabase
+                        .from('user_progress')
+                        .select('*')
+                        .eq('user_id', userId)
+                        .eq('day_number', 1);
+
+                    if (progressError) {
+                        console.error('Error checking progress:', progressError);
+                    }
+
+                    // If no progress exists, create initial progress for Day 1
+                    if (!existingProgress || existingProgress.length === 0) {
+                        console.log('Creating Day 1 progress for user:', userId);
+
+                        const {
+                            error: insertError
+                        } = await supabase
+                            .from('user_progress')
+                            .insert([{
+                                user_id: userId,
+                                day_number: 1,
+                                unlocked_at: new Date().toISOString(),
+                                next_unlock_at: null,
+                                completed: false,
+                                progress: 0,
+                                score: 0,
+                                answers: {}
+                            }]);
+
+                        if (insertError) {
+                            console.error('Error creating progress:', insertError);
+                            throw insertError;
+                        }
+
+                        console.log('Day 1 progress created successfully');
+                    } else {
+                        console.log('Day 1 progress already exists');
+                    }
+
+                } catch (error) {
+                    console.error('Error initializing user progress:', error);
+                }
+            }
+
+            function showLoading(show) {
+                loading.style.display = show ? 'block' : 'none';
+                loginBtn.style.display = show ? 'none' : 'block';
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                shakeLoginBox();
+            }
+
+            function clearError() {
+                errorMessage.style.display = 'none';
+            }
+
+            function shakeLoginBox() {
+                const loginBox = document.querySelector('.login-box');
+                loginBox.style.animation = 'none';
+                setTimeout(() => {
+                    loginBox.style.animation = 'shake 0.5s';
+                }, 10);
+
+                const style = document.createElement('style');
+                style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+            `;
+                document.head.appendChild(style);
+
+                setTimeout(() => {
+                    loginBox.style.animation = '';
+                    document.head.removeChild(style);
+                }, 500);
+            }
+
+            function redirectToDashboard() {
+                console.log('Redirecting to dashboard...');
+
+                // Add success animation
+                const loginBox = document.querySelector('.login-box');
+                if (loginBox) {
+                    loginBox.style.animation = 'successLogin 0.5s forwards';
+                }
+
+                const style = document.createElement('style');
+                style.textContent = `
+                @keyframes successLogin {
+                    0% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.05); opacity: 0.9; }
+                    100% { transform: scale(1); opacity: 0; }
+                }
+            `;
+                document.head.appendChild(style);
+
+                // Redirect after animation
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 500);
+            }
+
+            // Check if already logged in - Only check sessionStorage (auto-clears on tab close)
+            function checkExistingSession() {
+                console.log('Checking existing session...');
+
+                // Check sessionStorage only
+                const sessionData = sessionStorage.getItem('currentUser');
+                if (sessionData) {
+                    try {
+                        const session = JSON.parse(sessionData);
+                        console.log('Found session in sessionStorage:', session.username);
+
+                        // Check if session is valid
+                        const now = Date.now();
+                        if (now - session.timestamp < 24 * 60 * 60 * 1000) { // 24 hours max
+                            // Session is valid, redirect to dashboard
+                            console.log('Auto-redirecting to dashboard...');
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 1000);
+                            return true;
+                        } else {
+                            // Session expired
+                            console.log('Session expired');
+                            sessionStorage.removeItem('currentUser');
+                        }
+                    } catch (error) {
+                        console.error('Invalid session data:', error);
+                        sessionStorage.removeItem('currentUser');
+                    }
+                }
+
+                console.log('No valid session found');
+                return false;
+            }
+
+            // Check existing session on load
+            checkExistingSession();
+        });
+    </script>
+</body>
+
+</html>

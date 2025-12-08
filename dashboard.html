@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do you like being challenged?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffafcc 0%, #ffc8dd 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        /* Header */
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #ff4081;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .username {
+            font-weight: 600;
+            color: #ff4081;
+            font-size: 1.1rem;
+        }
+        
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ffebee;
+            color: #ff4081;
+            border: 2px solid #ff4081;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #ff4081;
+            color: white;
+        }
+        /* Welcome Message */
+        
+        .welcome-box {
+            background: linear-gradient(135deg, #ff6b9d, #ff4081);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
+        }
+        
+        .welcome-box h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-box p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+        /* Database Status */
+        
+        .db-status {
+            background: #e3f2fd;
+            border: 2px solid #bbdefb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #1565c0;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+        
+        .db-status.success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .db-status.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        /* Days Grid */
+        
+        .days-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .day-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 157, 0.2);
+        }
+        
+        .day-card.locked {
+            opacity: 0.7;
+            filter: grayscale(30%);
+        }
+        
+        .day-card.completed {
+            border-left: 5px solid #4cd964;
+        }
+        
+        .day-card.in-progress {
+            border-left: 5px solid #ff9800;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .day-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff4081;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .day-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-locked {
+            background: #f0f0f0;
+            color: #999;
+        }
+        
+        .status-unlocked {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .day-title {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .day-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        /* Progress Bar */
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4cd964, #5ac8fa);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        /* Countdown Timer */
+        
+        .countdown {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .countdown-timer {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff4081;
+            font-family: monospace;
+        }
+        
+        .countdown.finished {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .countdown.finished .countdown-timer {
+            color: #155724;
+        }
+        /* Action Buttons */
+        
+        .day-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .start-btn {
+            background: #ff4081;
+            color: white;
+        }
+        
+        .start-btn:hover:not(:disabled) {
+            background: #ff6b9d;
+            transform: translateY(-2px);
+        }
+        
+        .continue-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .continue-btn:hover:not(:disabled) {
+            background: #4cd964;
+            transform: translateY(-2px);
+        }
+        
+        .view-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .view-btn:hover:not(:disabled) {
+            background: #5ac8fa;
+            transform: translateY(-2px);
+        }
+        
+        .action-btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        /* Lock Overlay */
+        
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 15px;
+        }
+        
+        .day-card.locked:hover .lock-overlay {
+            opacity: 1;
+        }
+        
+        .lock-icon {
+            font-size: 3rem;
+            color: #ff4081;
+            margin-bottom: 10px;
+        }
+        
+        .lock-text {
+            color: #666;
+            font-weight: 600;
+        }
+        /* Special Days */
+        
+        .day-card.special {
+            background: linear-gradient(135deg, #fff5f7, #ffeef2);
+            border: 2px solid #ff4081;
+        }
+        
+        .day-card.day6 {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-color: #1976d2;
+        }
+        
+        .day-card.day6 .day-number {
+            color: #1976d2;
+        }
+        
+        .day-card.day7 {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-color: #7b1fa2;
+        }
+        
+        .day-card.day7 .day-number {
+            color: #7b1fa2;
+        }
+        /* Footer */
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: white;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .rules {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid #ff4081;
+        }
+        
+        .rules h3 {
+            color: #ff4081;
+            margin-bottom: 15px;
+        }
+        
+        .rules ul {
+            list-style-position: inside;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .rules li {
+            margin-bottom: 8px;
+        }
+        /* Loading Animation */
+        
+        .loading-dashboard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffebee;
+            border-top: 5px solid #ff4081;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* Responsive */
+        
+        @media (max-width: 768px) {
+            .days-container {
+                grid-template-columns: 1fr;
+            }
+            .user-info {
+                position: static;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Database Status -->
+        <div id="dbStatus" class="db-status">🔄 Loading your journey...</div>
+
+        <!-- Loading State -->
+        <div id="loadingDashboard" class="loading-dashboard">
+            <div class="spinner"></div>
+            <p>Loading your journey...</p>
+        </div>
+
+        <!-- Dashboard Content (hidden initially) -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- Header -->
+            <div class="header">
+                <h1>Our 7-Day Journey 💕</h1>
+                <p>This a special challenge where each day reveals something about me and you (sometimes) and brings us closer together. You have to complete each day to unlock the next!😝</p>
+
+                <div class="user-info">
+                    <span class="username" id="usernameDisplay">Welcome!</span>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="welcome-box">
+                <h2>We about to get started 🥳, <span id="welcomeName"></span>😍 </h2>
+                <p>This is our special journey. Each day has 5 puzzles about me and some you'll tell me. Complete them all there's something waiting for you at the end 👀 </p>
+            </div>
+
+            <!-- Days Grid -->
+            <div class="days-container" id="daysContainer">
+                <!-- Days will be dynamically generated -->
+            </div>
+
+            <!-- Rules Section -->
+            <div class="rules">
+                <h3>📝 How It Works:</h3>
+                <ul>
+                    <li>Some day has 5 puzzles about me</li>
+                    <li>Complete all puzzles to finish a day</li>
+                    <li>Next day unlocks after countdown</li>
+                    <li>Day 6 has no puzzles - just special messages</li>
+                    <li>Day 7 is the surprise!</li>
+                    <li>You can't replay completed days</li>
+                </ul>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Made by Hlakulo | This journey is specially crafted for you</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // CHECK AUTHENTICATION FIRST - SIMPLE VERSION
+        console.log('Dashboard loading...');
+
+        // Check localStorage FIRST (this works across pages)
+        let currentUser = null;
+        const localData = localStorage.getItem('journey_user_session');
+
+        if (localData) {
+            try {
+                currentUser = JSON.parse(localData);
+                console.log('Found user in localStorage:', currentUser.username);
+
+                // Also save to sessionStorage for current page
+                sessionStorage.setItem('currentUser', localData);
+            } catch (error) {
+                console.error('Error parsing localStorage:', error);
+                redirectToLogin();
+            }
+        } else {
+            // Also check sessionStorage as fallback
+            const sessionData = sessionStorage.getItem('currentUser');
+            if (sessionData) {
+                try {
+                    currentUser = JSON.parse(sessionData);
+                    console.log('Found user in sessionStorage:', currentUser.username);
+
+                    // Save to localStorage for cross-page access
+                    localStorage.setItem('journey_user_session', sessionData);
+                } catch (error) {
+                    console.error('Error parsing sessionStorage:', error);
+                    redirectToLogin();
+                }
+            }
+        }
+
+        // If still no user, redirect to login
+        if (!currentUser) {
+            console.log('NO USER FOUND - Redirecting to login');
+            redirectToLogin();
+        }
+
+        function redirectToLogin() {
+            // Clear any corrupted data
+            sessionStorage.clear();
+            localStorage.removeItem('journey_user_session');
+            window.location.href = 'index.html';
+        }
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://yqxrsigblsalvhndfvvs.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxeHJzaWdibHNhbHZobmRmdnZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDUwNjQsImV4cCI6MjA4MDYyMTA2NH0.gsj4ya1LMKNtWGdwhaDa91L81AdOc6E1BcBd2gwXcJc';
+
+        let supabase;
+        let userProgress = {};
+        let countdownTimers = {};
+
+        // Days configuration
+        const DAYS_CONFIG = [{
+            day: 1,
+            title: "Getting Started",
+            description: "Basic questions about me. Let's see how well you know the basics!",
+            puzzles: 5
+        }, {
+            day: 2,
+            title: "Are we moving great?",
+            description: "Deeper questions and a special song for you.",
+            puzzles: 5
+        }, {
+            day: 3,
+            title: "Deep Connections",
+            description: "Thoughtful questions.",
+            puzzles: 5
+        }, {
+            day: 4,
+            title: "Moods & Melodies",
+            description: "Guess my moods and enjoy a special song.",
+            puzzles: 5
+        }, {
+            day: 5,
+            title: "Memories & Meanings",
+            description: "Recall.",
+            puzzles: 5
+        }, {
+            day: 6,
+            title: "For You Only",
+            description: "No puzzles today!",
+            puzzles: 0,
+            special: true
+        }, {
+            day: 7,
+            title: "The Big Boss Day!",
+            description: "I really don't know what to put here.",
+            puzzles: 1,
+            special: true
+        }];
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Supabase
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // Show user info immediately
+            document.getElementById('usernameDisplay').textContent = currentUser.username;
+            document.getElementById('welcomeName').textContent = currentUser.username === 'Jessica' ? 'Sweetheart' : currentUser.username;
+
+            // Special welcome for girlfriend
+            if (currentUser.username === 'Jessica') {
+                document.querySelector('.welcome-box h2').innerHTML =
+                    `We about to get started, sweetheart! 🌟<br><small style="font-size: 1rem; opacity: 0.8;">This whole journey is made just for you</small>`;
+            }
+
+            // Load user progress from Supabase
+            await loadUserProgress();
+
+            // Initialize dashboard
+            showDashboard();
+            renderDays();
+            updateCountdowns();
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        async function loadUserProgress() {
+            try {
+                showDBStatus('🔄 Loading your progress...');
+
+                // Load all user progress from Supabase
+                const {
+                    data: progress,
+                    error
+                } = await supabase
+                    .from('user_progress')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('day_number', {
+                        ascending: true
+                    });
+
+                if (error) throw error;
+
+                // Initialize progress object
+                userProgress = {};
+
+                // Process loaded progress
+                if (progress && progress.length > 0) {
+                    progress.forEach(p => {
+                        userProgress[`day${p.day_number}`] = {
+                            unlocked: !!p.unlocked_at,
+                            completed: p.completed,
+                            score: p.score || 0,
+                            progress: p.progress || 0,
+                            next_unlock_at: p.next_unlock_at,
+                            unlocked_at: p.unlocked_at,
+                            completed_at: p.completed_at
+                        };
+                    });
+                }
+
+                // Ensure Day 1 exists
+                if (!userProgress.day1 || !userProgress.day1.unlocked) {
+                    await initializeDayProgress(1);
+                }
+
+                // Check and initialize other days
+                for (let day = 2; day <= 7; day++) {
+                    const dayKey = `day${day}`;
+                    const prevDayKey = `day${day - 1}`;
+                    const prevDayProgress = userProgress[prevDayKey];
+
+                    if (!userProgress[dayKey]) {
+                        // Day doesn't exist in database
+                        await initializeDayProgress(day);
+                    }
+
+                    // Check if day should be unlocked
+                    if (prevDayProgress && prevDayProgress.completed) {
+                        await checkDayUnlockStatus(day);
+                    }
+                }
+
+                showDBStatus('✅ Progress loaded!', 'success');
+                setTimeout(() => {
+                    hideDBStatus();
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                showDBStatus('❌ Failed to load progress', 'error');
+            }
+        }
+
+        async function initializeDayProgress(dayNumber) {
+            const isJessica = currentUser.is_jessica;
+            const unlockDuration = isJessica ? 24 * 60 * 60 * 1000 : 3 * 60 * 1000; // 24h or 3min
+
+            let unlockedAt = null;
+            let nextUnlockAt = null;
+
+            if (dayNumber === 1) {
+                // Day 1 is always unlocked immediately
+                unlockedAt = new Date().toISOString();
+            } else if (dayNumber > 1) {
+                // Check if previous day is completed
+                const prevDayProgress = userProgress[`day${dayNumber - 1}`];
+                if (prevDayProgress && prevDayProgress.completed) {
+                    // Set unlock time based on previous day completion
+                    const prevCompletedAt = new Date(prevDayProgress.completed_at || Date.now());
+                    nextUnlockAt = new Date(prevCompletedAt.getTime() + unlockDuration).toISOString();
+
+                    // Check if unlock time has passed
+                    if (new Date() >= new Date(nextUnlockAt)) {
+                        unlockedAt = new Date().toISOString();
+                        nextUnlockAt = null;
+                    }
+                }
+            }
+
+            const {
+                error
+            } = await supabase
+                .from('user_progress')
+                .upsert({
+                    user_id: currentUser.id,
+                    day_number: dayNumber,
+                    unlocked_at: unlockedAt,
+                    next_unlock_at: nextUnlockAt,
+                    completed: false,
+                    progress: 0,
+                    score: 0,
+                    answers: {}
+                }, {
+                    onConflict: 'user_id,day_number'
+                });
+
+            if (error) throw error;
+
+            // Update local progress
+            userProgress[`day${dayNumber}`] = {
+                unlocked: !!unlockedAt,
+                completed: false,
+                score: 0,
+                progress: 0,
+                next_unlock_at: nextUnlockAt,
+                unlocked_at: unlockedAt,
+                completed_at: null
+            };
+        }
+
+        async function checkDayUnlockStatus(dayNumber) {
+            const dayKey = `day${dayNumber}`;
+            const dayProgress = userProgress[dayKey];
+
+            if (!dayProgress) return;
+
+            // Check if day has next_unlock_at and it has passed
+            if (dayProgress.next_unlock_at && !dayProgress.unlocked) {
+                const now = new Date();
+                const unlockTime = new Date(dayProgress.next_unlock_at);
+
+                if (now >= unlockTime) {
+                    // Unlock the day
+                    await unlockDay(dayNumber);
+                }
+            }
+        }
+
+        async function unlockDay(dayNumber) {
+            const {
+                error
+            } = await supabase
+                .from('user_progress')
+                .update({
+                    unlocked_at: new Date().toISOString(),
+                    next_unlock_at: null
+                })
+                .eq('user_id', currentUser.id)
+                .eq('day_number', dayNumber);
+
+            if (error) throw error;
+
+            // Update local progress
+            if (!userProgress[`day${dayNumber}`]) {
+                userProgress[`day${dayNumber}`] = {};
+            }
+
+            userProgress[`day${dayNumber}`].unlocked = true;
+            userProgress[`day${dayNumber}`].unlocked_at = new Date().toISOString();
+            userProgress[`day${dayNumber}`].next_unlock_at = null;
+
+            // Re-render days
+            renderDays();
+        }
+
+        function showDashboard() {
+            // Hide loading, show content
+            document.getElementById('loadingDashboard').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+        }
+
+        function renderDays() {
+            const daysContainer = document.getElementById('daysContainer');
+            daysContainer.innerHTML = '';
+
+            DAYS_CONFIG.forEach(dayConfig => {
+                const dayNumber = dayConfig.day;
+                const dayKey = `day${dayNumber}`;
+                const progress = userProgress[dayKey] || {
+                    unlocked: dayNumber === 1,
+                    completed: false,
+                    score: 0,
+                    progress: 0
+                };
+
+                const dayCard = createDayCard(dayConfig, progress);
+                daysContainer.appendChild(dayCard);
+            });
+        }
+
+        function createDayCard(dayConfig, progress) {
+            const dayNumber = dayConfig.day;
+            const dayKey = `day${dayNumber}`;
+            const isLocked = !progress.unlocked;
+            const isCompleted = progress.completed;
+            const isInProgress = progress.unlocked && !progress.completed && progress.progress > 0;
+
+            // Determine status
+            let statusText, statusClass;
+            if (isLocked) {
+                statusText = 'Locked';
+                statusClass = 'status-locked';
+            } else if (isCompleted) {
+                statusText = 'Completed';
+                statusClass = 'status-completed';
+            } else if (isInProgress) {
+                statusText = 'In Progress';
+                statusClass = 'status-in-progress';
+            } else {
+                statusText = 'Ready';
+                statusClass = 'status-unlocked';
+            }
+
+            // Progress percentage
+            const progressPercent = dayConfig.puzzles > 0 ?
+                Math.min(100, (progress.progress / dayConfig.puzzles) * 100) :
+                100;
+
+            // Countdown HTML
+            let countdownHTML = '';
+            if (progress.next_unlock_at && !progress.unlocked) {
+                countdownHTML = createCountdownHTML(dayNumber, progress.next_unlock_at);
+            }
+
+            // Action button
+            let actionButtonHTML = '';
+            if (isLocked) {
+                actionButtonHTML = `<button class="action-btn start-btn" disabled>Locked</button>`;
+            } else if (isCompleted) {
+                actionButtonHTML = `
+        <a href="day${dayNumber}.html" class="action-btn view-btn">
+            View Completed ✅
+        </a>
+    `;
+            } else if (isInProgress) {
+                actionButtonHTML = `
+                    <a href="day${dayNumber}.html" class="action-btn continue-btn">
+                        Continue (${progress.progress}/${dayConfig.puzzles})
+                    </a>
+                `;
+            } else {
+                actionButtonHTML = `
+                    <a href="day${dayNumber}.html" class="action-btn start-btn">
+                        ${dayConfig.puzzles > 0 ? 'Start Day' : 'View Day'}
+                    </a>
+                `;
+            }
+
+            // Special class for days 6 and 7
+            const specialClass = dayConfig.special ? `special day${dayNumber}` : '';
+
+            const dayCard = document.createElement('div');
+            dayCard.className = `day-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''} ${isInProgress ? 'in-progress' : ''} ${specialClass}`;
+            dayCard.innerHTML = `
+                <div class="day-header">
+                    <div class="day-number">
+                        <span>Day ${dayNumber}</span>
+                        ${isCompleted ? '✅' : ''}
+                    </div>
+                    <div class="day-status ${statusClass}">${statusText}</div>
+                </div>
+                
+                <h3 class="day-title">${dayConfig.title}</h3>
+                <p class="day-description">${dayConfig.description}</p>
+                
+                ${dayConfig.puzzles > 0 ? `
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>${progress.progress}/${dayConfig.puzzles}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${countdownHTML}
+                
+                <div class="day-actions">
+                    ${actionButtonHTML}
+                </div>
+                
+                ${isLocked ? `
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <div class="lock-text">Complete Day ${dayNumber - 1} to unlock</div>
+                    </div>
+                ` : ''}
+            `;
+            
+            return dayCard;
+        }
+        
+        function createCountdownHTML(dayNumber, unlockTime) {
+            const timerId = `countdown-${dayNumber}`;
+            return `
+                <div class="countdown">
+                    <div class="countdown-label">Unlocks in:</div>
+                    <div class="countdown-timer" id="${timerId}">--:--:--</div>
+                </div>
+            `;
+        }
+        
+        function updateCountdowns() {
+            // Clear existing timers
+            Object.values(countdownTimers).forEach(timer => clearInterval(timer));
+            countdownTimers = {};
+            
+            // Setup countdown timers for each day
+            for (let day = 2; day <= 7; day++) {
+                const dayKey = `day${day}`;
+                const dayProgress = userProgress[dayKey];
+                
+                if (dayProgress && dayProgress.next_unlock_at && !dayProgress.unlocked) {
+                    setupCountdownTimer(day, dayProgress.next_unlock_at);
+                }
+            }
+        }
+        
+        function setupCountdownTimer(dayNumber, unlockTime) {
+            const timerId = `countdown-${dayNumber}`;
+            const timerElement = document.getElementById(timerId);
+            
+            if (!timerElement) return;
+            
+            const updateTimer = () => {
+                const now = new Date();
+                const unlock = new Date(unlockTime);
+                const timeLeft = unlock - now;
+                
+                if (timeLeft <= 0) {
+                    // Countdown finished
+                    timerElement.textContent = "Unlocked! 🎉";
+                    timerElement.parentElement.classList.add('finished');
+                    
+                    // Unlock the day
+                    unlockDay(dayNumber);
+                    clearInterval(countdownTimers[dayNumber]);
+                    delete countdownTimers[dayNumber];
+                } else {
+                    const totalSeconds = Math.floor(timeLeft / 1000);
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = totalSeconds % 60;
+                    
+                    timerElement.textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            };
+            
+            // Update immediately
+            updateTimer();
+            
+            // Update every second
+            countdownTimers[dayNumber] = setInterval(updateTimer, 1000);
+        }
+        
+        function showDBStatus(message, type = '') {
+            const statusBar = document.getElementById('dbStatus');
+            statusBar.textContent = message;
+            statusBar.className = `db-status ${type}`;
+            statusBar.style.display = 'block';
+        }
+        
+        function hideDBStatus() {
+            document.getElementById('dbStatus').style.display = 'none';
+        }
+        
+        function logout() {
+            // Clear all storage
+            sessionStorage.clear();
+            localStorage.removeItem('journey_user_session');
+            
+            // Redirect to login
+            window.location.href = 'index.html';
+        }
+        
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+        }
+        
+        // Format time for display
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+
+</html>
