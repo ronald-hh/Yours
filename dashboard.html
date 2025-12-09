@@ -163,6 +163,11 @@
             border-left: 5px solid #ff9800;
         }
         
+        .day-card.game-card {
+            border-left: 5px solid #9c27b0;
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        }
+        
         .day-header {
             display: flex;
             justify-content: space-between;
@@ -177,6 +182,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+        
+        .game-card .day-number {
+            color: #9c27b0;
         }
         
         .day-status {
@@ -206,10 +215,19 @@
             color: #856404;
         }
         
+        .status-game {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
         .day-title {
             font-size: 1.4rem;
             color: #333;
             margin-bottom: 10px;
+        }
+        
+        .game-card .day-title {
+            color: #7b1fa2;
         }
         
         .day-description {
@@ -217,6 +235,10 @@
             line-height: 1.6;
             margin-bottom: 20px;
             font-size: 1rem;
+        }
+        
+        .game-card .day-description {
+            color: #9c27b0;
         }
         /* Progress Bar */
         
@@ -244,6 +266,10 @@
             background: linear-gradient(to right, #4cd964, #5ac8fa);
             border-radius: 5px;
             transition: width 0.5s ease;
+        }
+        
+        .game-card .progress-fill {
+            background: linear-gradient(to right, #9c27b0, #e1bee7);
         }
         /* Countdown Timer */
         
@@ -329,6 +355,16 @@
             transform: translateY(-2px);
         }
         
+        .game-btn {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+        }
+        
+        .game-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ba68c8, #9c27b0);
+            transform: translateY(-2px);
+        }
+        
         .action-btn:disabled {
             background: #e0e0e0;
             color: #999;
@@ -390,6 +426,10 @@
         
         .day-card.day7 .day-number {
             color: #7b1fa2;
+        }
+        
+        .day-card.game-card {
+            border: 2px solid #9c27b0;
         }
         /* Footer */
         
@@ -586,7 +626,7 @@
         let userProgress = {};
         let countdownTimers = {};
 
-        // Days configuration
+        // Days configuration - Now includes Game card
         const DAYS_CONFIG = [{
             day: 1,
             title: "Getting Started",
@@ -624,6 +664,12 @@
             description: "I really don't know what to put here.",
             puzzles: 1,
             special: true
+        }, {
+            day: 8,
+            title: "🎮 Bonus Game: Catch Me If You Can",
+            description: "Think you're fast? Try catching this button... if you can! 😏",
+            puzzles: 0,
+            isGame: true
         }];
 
         document.addEventListener('DOMContentLoaded', async function() {
@@ -710,6 +756,20 @@
                     }
                 }
 
+                // Game (Day 8) is always unlocked - no need to check in database
+                if (!userProgress.day8) {
+                    userProgress.day8 = {
+                        unlocked: true,
+                        completed: false,
+                        score: 0,
+                        progress: 0,
+                        next_unlock_at: null,
+                        unlocked_at: new Date().toISOString(),
+                        completed_at: null,
+                        isGame: true
+                    };
+                }
+
                 showDBStatus('✅ Progress loaded!', 'success');
                 setTimeout(() => {
                     hideDBStatus();
@@ -731,7 +791,7 @@
             if (dayNumber === 1) {
                 // Day 1 is always unlocked immediately
                 unlockedAt = new Date().toISOString();
-            } else if (dayNumber > 1) {
+            } else if (dayNumber > 1 && dayNumber <= 7) {
                 // Check if previous day is completed
                 const prevDayProgress = userProgress[`day${dayNumber - 1}`];
                 if (prevDayProgress && prevDayProgress.completed) {
@@ -747,34 +807,38 @@
                 }
             }
 
-            const {
-                error
-            } = await supabase
-                .from('user_progress')
-                .upsert({
-                    user_id: currentUser.id,
-                    day_number: dayNumber,
-                    unlocked_at: unlockedAt,
-                    next_unlock_at: nextUnlockAt,
-                    completed: false,
-                    progress: 0,
-                    score: 0,
-                    answers: {}
-                }, {
-                    onConflict: 'user_id,day_number'
-                });
+            // Only create database entries for days 1-7, not for the game
+            if (dayNumber <= 7) {
+                const {
+                    error
+                } = await supabase
+                    .from('user_progress')
+                    .upsert({
+                        user_id: currentUser.id,
+                        day_number: dayNumber,
+                        unlocked_at: unlockedAt,
+                        next_unlock_at: nextUnlockAt,
+                        completed: false,
+                        progress: 0,
+                        score: 0,
+                        answers: {}
+                    }, {
+                        onConflict: 'user_id,day_number'
+                    });
 
-            if (error) throw error;
+                if (error) throw error;
+            }
 
             // Update local progress
             userProgress[`day${dayNumber}`] = {
-                unlocked: !!unlockedAt,
+                unlocked: !!unlockedAt || dayNumber === 8, // Game is always unlocked
                 completed: false,
                 score: 0,
                 progress: 0,
                 next_unlock_at: nextUnlockAt,
                 unlocked_at: unlockedAt,
-                completed_at: null
+                completed_at: null,
+                isGame: dayNumber === 8
             };
         }
 
@@ -837,10 +901,11 @@
                 const dayNumber = dayConfig.day;
                 const dayKey = `day${dayNumber}`;
                 const progress = userProgress[dayKey] || {
-                    unlocked: dayNumber === 1,
+                    unlocked: dayNumber === 1 || dayNumber === 8, // Day 1 and Game are always unlocked
                     completed: false,
                     score: 0,
-                    progress: 0
+                    progress: 0,
+                    isGame: dayConfig.isGame
                 };
 
                 const dayCard = createDayCard(dayConfig, progress);
@@ -854,10 +919,14 @@
             const isLocked = !progress.unlocked;
             const isCompleted = progress.completed;
             const isInProgress = progress.unlocked && !progress.completed && progress.progress > 0;
+            const isGame = dayConfig.isGame || progress.isGame;
 
             // Determine status
             let statusText, statusClass;
-            if (isLocked) {
+            if (isGame) {
+                statusText = 'Bonus Game';
+                statusClass = 'status-game';
+            } else if (isLocked) {
                 statusText = 'Locked';
                 statusClass = 'status-locked';
             } else if (isCompleted) {
@@ -874,7 +943,7 @@
             // Progress percentage
             const progressPercent = dayConfig.puzzles > 0 ?
                 Math.min(100, (progress.progress / dayConfig.puzzles) * 100) :
-                100;
+                (isGame ? 0 : 100);
 
             // Countdown HTML
             let countdownHTML = '';
@@ -884,14 +953,20 @@
 
             // Action button
             let actionButtonHTML = '';
-            if (isLocked) {
+            if (isGame) {
+                actionButtonHTML = `
+                    <a href="game.html" class="action-btn game-btn">
+                        Play Game 🎮
+                    </a>
+                `;
+            } else if (isLocked) {
                 actionButtonHTML = `<button class="action-btn start-btn" disabled>Locked</button>`;
             } else if (isCompleted) {
                 actionButtonHTML = `
-        <a href="day${dayNumber}.html" class="action-btn view-btn">
-            View Completed ✅
-        </a>
-    `;
+                    <a href="day${dayNumber}.html" class="action-btn view-btn">
+                        View Completed ✅
+                    </a>
+                `;
             } else if (isInProgress) {
                 actionButtonHTML = `
                     <a href="day${dayNumber}.html" class="action-btn continue-btn">
@@ -906,16 +981,18 @@
                 `;
             }
 
-            // Special class for days 6 and 7
+            // Special classes
             const specialClass = dayConfig.special ? `special day${dayNumber}` : '';
+            const gameClass = isGame ? 'game-card' : '';
 
             const dayCard = document.createElement('div');
-            dayCard.className = `day-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''} ${isInProgress ? 'in-progress' : ''} ${specialClass}`;
+            dayCard.className = `day-card ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''} ${isInProgress ? 'in-progress' : ''} ${specialClass} ${gameClass}`;
             dayCard.innerHTML = `
                 <div class="day-header">
                     <div class="day-number">
-                        <span>Day ${dayNumber}</span>
+                        <span>${isGame ? '🎮' : 'Day'} ${isGame ? '' : dayNumber}</span>
                         ${isCompleted ? '✅' : ''}
+                        ${isGame ? '😈' : ''}
                     </div>
                     <div class="day-status ${statusClass}">${statusText}</div>
                 </div>
@@ -941,7 +1018,7 @@
                     ${actionButtonHTML}
                 </div>
                 
-                ${isLocked ? `
+                ${isLocked && !isGame ? `
                     <div class="lock-overlay">
                         <div class="lock-icon">🔒</div>
                         <div class="lock-text">Complete Day ${dayNumber - 1} to unlock</div>

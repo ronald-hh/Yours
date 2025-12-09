@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Me If You Can 😏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(106, 17, 203, 0.3);
+            border: 4px solid #9c27b0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e1bee7;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+        
+        .sound-toggle {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sound-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+        
+        .sound-toggle.muted {
+            background: linear-gradient(135deg, #757575, #616161);
+        }
+        
+        h1 {
+            color: #7b1fa2;
+            font-size: 2.2em;
+            text-align: center;
+            margin: 0;
+            text-shadow: 2px 2px 0 #e1bee7;
+        }
+        
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ba68c8;
+        }
+        
+        .info-box {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .info-label {
+            font-size: 0.8em;
+            color: #7b1fa2;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #9c27b0;
+        }
+        
+        #troll-message {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border: 2px dashed #ff9800;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+            color: #ff6f00;
+            font-weight: bold;
+            font-size: 0.95em;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        #message {
+            min-height: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #7b1fa2;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f3e5f5;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #fafafa;
+            border-radius: 15px;
+            border: 3px solid #ba68c8;
+            margin: 20px 0;
+            overflow: hidden;
+            touch-action: none;
+        }
+        
+        #runaway-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 35px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.3);
+            transition: all 0.1s;
+            z-index: 10;
+            white-space: nowrap;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        #runaway-btn:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+        
+        .speed-indicator {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #2196f3;
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .mobile-warning,
+        .desktop-warning {
+            display: none;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            color: #d32f2f;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+                margin: 10px;
+            }
+            .game-area {
+                height: 350px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            #runaway-btn {
+                padding: 15px 18px;
+                font-size: 1.1em;
+                min-width: 110px;
+            }
+            .mobile-warning {
+                display: block;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .desktop-warning {
+                display: block;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .game-area {
+                height: 300px;
+            }
+        }
+        /* Particle effects */
+        
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #9c27b0;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        /* Glitch effect */
+        
+        .glitch {
+            animation: glitch 0.2s infinite;
+        }
+        
+        @keyframes glitch {
+            0% {
+                transform: translate(-50%, -50%);
+            }
+            25% {
+                transform: translate(-51%, -49%);
+            }
+            50% {
+                transform: translate(-49%, -51%);
+            }
+            75% {
+                transform: translate(-50.5%, -48.5%);
+            }
+            100% {
+                transform: translate(-50%, -50%);
+            }
+        }
+        /* Win animation */
+        
+        .win-celebration {
+            animation: winAnimation 0.6s ease-out;
+        }
+        
+        @keyframes winAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        /* Level up animation */
+        
+        .level-up {
+            animation: levelUp 0.5s ease-out;
+            color: #ff4081;
+        }
+        
+        @keyframes levelUp {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        /* High score celebration */
+        
+        .high-score {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #453bff, #000dff);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 255, 0.5);
+            z-index: 100;
+            display: none;
+            text-align: center;
+            animation: popIn 0.5s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <!-- Back Button and Sound Toggle -->
+        <div class="game-header">
+            <a href="dashboard.html" class="back-btn">
+                ← Back to Dashboard
+            </a>
+            <h1>Catch Me If You Can 😏</h1>
+            <button class="sound-toggle" id="soundToggle">
+                🔊 Sounds ON
+            </button>
+        </div>
+
+        <!-- Troll Message -->
+        <div id="troll-message">
+            Secret Challenge: Score 500 points to unlock a day (Good luck with that 😏)
+        </div>
+
+        <!-- Game Info -->
+        <div class="game-info">
+            <div class="info-box">
+                <div class="info-label">SCORE</div>
+                <div class="info-value" id="score">0</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">LEVEL</div>
+                <div class="info-value" id="level">1</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">TIME</div>
+                <div class="info-value" id="timer">60</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">MISSES</div>
+                <div class="info-value" id="misses">0</div>
+            </div>
+        </div>
+
+        <!-- Game Message -->
+        <div id="message">Click the button to start! 👇</div>
+
+        <!-- Game Area -->
+        <div class="game-area" id="game-area">
+            <button id="runaway-btn">Click me 🤣</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="speed-indicator">Speed: <span id="speed-level">NORMAL</span></div>
+            <button id="restart-btn" style="padding: 8px 16px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer;">Restart</button>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <div class="desktop-warning">💻 <strong>Desktop:</strong> Hover cursor over button to catch</div>
+            <div class="mobile-warning">📱 <strong>Mobile:</strong> Touch the center of button precisely</div>
+            <div style="margin-top: 10px;">⚠️ The button gets <strong>faster and smaller</strong> with each miss! Catch it to score points!</div>
+        </div>
+    </div>
+
+    <!-- High Score Celebration -->
+    <div class="high-score" id="high-score-celebration">
+        <h2 style="color: #d32f2f; margin-bottom: 10px;">CONGRATULATIONS! 🫣</h2>
+        <p style="font-size: 1.2em; margin-bottom: 15px;">You scored 500 points!</p>
+        <p style="margin-bottom: 20px; color: #666;">Just kidding... there's no unlock! 🤣</p>
+        <p style="font-size: 0.9em; color: #5900ff;">You're too good at this! 😭</p>
+    </div>
+
+    <!-- Fireworks Container -->
+    <div class="fireworks" id="fireworks"></div>
+
+    <!-- Audio Elements (hidden) -->
+    <audio id="teleportSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-emergency-alarm-1000.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="failSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-retro-click-237.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="winSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="levelUpSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Game Elements
+        const button = document.getElementById('runaway-btn');
+        const gameArea = document.getElementById('game-area');
+        const message = document.getElementById('message');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const timerDisplay = document.getElementById('timer');
+        const missesDisplay = document.getElementById('misses');
+        const speedLevelDisplay = document.getElementById('speed-level');
+        const restartBtn = document.getElementById('restart-btn');
+        const trollMessage = document.getElementById('troll-message');
+        const highScoreCelebration = document.getElementById('high-score-celebration');
+        const fireworksContainer = document.getElementById('fireworks');
+        const soundToggle = document.getElementById('soundToggle');
+
+        // Audio Elements
+        const teleportSound = document.getElementById('teleportSound');
+        const failSound = document.getElementById('failSound');
+        const winSound = document.getElementById('winSound');
+        const levelUpSound = document.getElementById('levelUpSound');
+
+        // Game Variables
+        let score = 0;
+        let level = 1;
+        let misses = 0;
+        let timeLeft = 60;
+        let gameActive = false;
+        let countdownTimer;
+        let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let speedMultiplier = 1;
+        let buttonSize = 1;
+        let trollShown = false;
+        let highScoreCelebrated = false;
+        let isGameEnded = false;
+        let soundsEnabled = true;
+
+        // Insults & Messages
+        const insults = [
+            "Wow. Missed again? Skill issue.",
+            "Are you even trying?",
+            "My grandma could do better!",
+            "You move like a sloth 🦥",
+            "Is your mouse/touchscreen broken?",
+            "Bruh... seriously?",
+            "This is getting embarrassing 😬",
+            "Maybe try closing your eyes?",
+            "You'll never get to 500 at this rate!",
+            "The button is laughing at you 😂",
+            "Maybe stick to tic-tac-toe?",
+            "500 points? More like 5 points!",
+            "You play like you're lagging irl",
+            "Did you forget how to click/tap?",
+            "Kuta lungha?? 🤣"
+        ];
+
+        const encouragement = [
+            "Nice catch!",
+            "Gotcha!",
+            "You're getting good!",
+            "I'm getting nervous...",
+            "Okay you're getting better!",
+            "You're learning my patterns!",
+            "Not bad! Not bad at all!",
+            "You're getting dangerous! 🤣"
+        ];
+
+        // Initialize Game
+        function initGame() {
+            message.textContent = "Click the button to start! 👇";
+            button.textContent = "Click me 🤣";
+            button.style.transform = "translate(-50%, -50%) scale(1)";
+            button.style.top = "50%";
+            button.style.left = "50%";
+            button.style.background = "linear-gradient(145deg, #9c27b0, #7b1fa2)";
+
+            score = 0;
+            level = 1;
+            misses = 0;
+            timeLeft = 60;
+            speedMultiplier = 1;
+            buttonSize = 1; // Smaller starting size
+            trollShown = false;
+            isGameEnded = false;
+            highScoreCelebrated = false;
+
+            updateDisplays();
+            speedLevelDisplay.textContent = "NORMAL";
+
+            // Hide celebrations
+            highScoreCelebration.style.display = 'none';
+            fireworksContainer.style.display = 'none';
+            fireworksContainer.innerHTML = '';
+
+            // Clear any existing timers
+            clearInterval(countdownTimer);
+
+            // Show troll message for 15 seconds
+            if (!trollShown) {
+                trollMessage.style.display = 'block';
+                setTimeout(() => {
+                    trollMessage.style.display = 'none';
+                }, 15000); // 15 seconds
+                trollShown = true;
+            }
+        }
+
+        function updateDisplays() {
+            scoreDisplay.textContent = score;
+            levelDisplay.textContent = level;
+            missesDisplay.textContent = misses;
+            timerDisplay.textContent = timeLeft;
+
+            // Check for 500 points (troll unlock)
+            if (score >= 500 && !highScoreCelebrated) {
+                celebrateHighScore();
+                highScoreCelebrated = true;
+            }
+        }
+
+        function startGame() {
+            if (gameActive || isGameEnded) return;
+
+            gameActive = true;
+            isGameEnded = false;
+            message.textContent = "Catch me! 💨";
+
+            // Start game timer
+            timeLeft = 60;
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+
+                // Increase difficulty over time
+                if (timeLeft === 45 && level === 1) {
+                    levelUp();
+                } else if (timeLeft === 30 && level === 2) {
+                    levelUp();
+                } else if (timeLeft === 15 && level === 3) {
+                    levelUp();
+                }
+            }, 1000);
+
+            // Make button start running
+            teleportButton();
+        }
+
+        function levelUp() {
+            level++;
+            speedMultiplier += 0.8; // Increased from 0.6
+            buttonSize = Math.max(0.3, buttonSize - 0.2); // Shrinks faster, smaller minimum
+
+            let speedText = "";
+            if (level === 2) speedText = "FAST";
+            else if (level === 3) speedText = "SUPER FAST";
+            else if (level === 4) speedText = "IMPOSSIBLE";
+            else speedText = "INSANE";
+
+            speedLevelDisplay.textContent = speedText;
+            levelDisplay.classList.add('level-up');
+
+            message.textContent = `🚨 LEVEL ${level}! Button got smaller & faster! 🚨`;
+
+            // Play level up sound
+            if (soundsEnabled) {
+                levelUpSound.currentTime = 0;
+                levelUpSound.play().catch(e => console.log("Sound play failed:", e));
+            }
+
+            // Update button size
+            button.style.transform = `translate(-50%, -50%) scale(${buttonSize})`;
+
+            setTimeout(() => {
+                levelDisplay.classList.remove('level-up');
+                if (gameActive) message.textContent = "Can you handle this? 😏";
+            }, 1000);
+        }
+
+        function teleportButton() {
+            if (!gameActive || isGameEnded) return;
+
+            const areaRect = gameArea.getBoundingClientRect();
+            const buttonRect = button.getBoundingClientRect();
+
+            // Calculate safe zone
+            const maxX = areaRect.width - buttonRect.width * buttonSize;
+            const maxY = areaRect.height - buttonRect.height * buttonSize;
+
+            let newX, newY;
+
+            if (!isMobile) {
+                // Desktop: move 80-130px in random direction (increased distance)
+                const currentX = parseInt(button.style.left) || areaRect.width / 2;
+                const currentY = parseInt(button.style.top) || areaRect.height / 2;
+
+                const angle = Math.random() * Math.PI * 2;
+                const baseDistance = 80;
+                const randomDistance = Math.random() * 50;
+                const distance = (baseDistance + randomDistance) * speedMultiplier;
+
+                newX = currentX + Math.cos(angle) * distance;
+                newY = currentY + Math.sin(angle) * distance;
+
+                // Keep within bounds
+                newX = Math.max(15, Math.min(maxX - 15, newX));
+                newY = Math.max(15, Math.min(maxY - 15, newY));
+            } else {
+                // Mobile: teleport to random position
+                newX = Math.random() * maxX;
+                newY = Math.random() * maxY;
+            }
+
+            // Apply new position
+            button.style.left = newX + "px";
+            button.style.top = newY + "px";
+
+            // Play teleport sound
+            if (soundsEnabled) {
+                teleportSound.currentTime = 0;
+                teleportSound.play().catch(e => console.log("Sound play failed:", e));
+            }
+
+            // Add glitch effect at higher levels
+            if (level >= 3) {
+                button.classList.add('glitch');
+                setTimeout(() => button.classList.remove('glitch'), 200);
+            }
+
+            // Create particle effect
+            if (level >= 2) {
+                createParticles(buttonRect.left + buttonRect.width / 2, buttonRect.top + buttonRect.height / 2);
+            }
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 3; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.backgroundColor = ['#9c27b0', '#ba68c8', '#e1bee7'][Math.floor(Math.random() * 3)];
+                document.body.appendChild(particle);
+
+                // Animate particle
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 20 + Math.random() * 30;
+                const duration = 300 + Math.random() * 400;
+
+                particle.animate([{
+                    transform: `translate(0, 0) scale(1)`,
+                    opacity: 0.7
+                }, {
+                    transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`,
+                    opacity: 0
+                }], {
+                    duration: duration,
+                    easing: 'ease-out'
+                });
+
+                // Remove particle after animation
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, duration);
+            }
+        }
+
+        function handleCatch() {
+            // If game ended and button says "TRY AGAIN?", restart game
+            if (isGameEnded && button.textContent.includes("TRY AGAIN")) {
+                initGame();
+                startGame();
+                return;
+            }
+
+            if (!gameActive) {
+                startGame();
+                return;
+            }
+
+            // Score based on level (harder levels = more points)
+            score += 15 * level;
+
+            // Play win sound
+            if (soundsEnabled) {
+                winSound.currentTime = 0;
+                winSound.play().catch(e => console.log("Sound play failed:", e));
+            }
+
+            // Update message
+            if (misses > 0) {
+                message.textContent = encouragement[Math.floor(Math.random() * encouragement.length)];
+            } else {
+                message.textContent = "First try! Beginner's luck? 🍀";
+            }
+
+            // Celebration effect
+            button.classList.add('win-celebration');
+            setTimeout(() => button.classList.remove('win-celebration'), 600);
+
+            // Change button text temporarily
+            const originalText = button.textContent;
+            button.textContent = "NOOOO! 😭";
+            setTimeout(() => {
+                if (gameActive) button.textContent = originalText;
+            }, 500);
+
+            updateDisplays();
+
+            // Teleport after a short delay
+            setTimeout(() => {
+                if (gameActive) teleportButton();
+            }, 300);
+        }
+
+        function handleMiss() {
+            if (!gameActive || isGameEnded) return;
+
+            misses++;
+
+            // Play fail sound
+            if (soundsEnabled) {
+                failSound.currentTime = 0;
+                failSound.play().catch(e => console.log("Sound play failed:", e));
+            }
+
+            // Update message with insult (more frequent at higher levels)
+            if (misses % Math.max(1, 5 - level) === 0) {
+                message.textContent = insults[Math.floor(Math.random() * insults.length)];
+                message.style.color = "#d32f2f";
+                setTimeout(() => {
+                    if (gameActive) message.style.color = "#7b1fa2";
+                }, 800);
+            }
+
+            updateDisplays();
+            teleportButton();
+        }
+
+        function endGame() {
+            gameActive = false;
+            isGameEnded = true;
+            clearInterval(countdownTimer);
+
+            // Cleaner "Time's up" message without score and misses
+            message.innerHTML = "⏰ <strong>TIME'S UP!</strong>";
+            button.textContent = "TRY AGAIN?";
+            button.style.background = "linear-gradient(145deg, #757575, #9E9E9E)";
+
+            button.style.transform = "translate(-50%, -50%) scale(1)";
+            button.style.left = "50%";
+            button.style.top = "50%";
+        }
+
+        function celebrateHighScore() {
+            // Show celebration popup
+            highScoreCelebration.style.display = 'block';
+
+            // Create fireworks
+            fireworksContainer.style.display = 'block';
+            createFireworks();
+
+            // Play sound if available
+            playCelebrationSound();
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                highScoreCelebration.style.display = 'none';
+                fireworksContainer.style.display = 'none';
+                fireworksContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.style.position = 'absolute';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.width = '4px';
+                    firework.style.height = '4px';
+                    firework.style.backgroundColor = ['#ff4081', '#ff9800', '#9c27b0', '#2196f3'][Math.floor(Math.random() * 4)];
+                    firework.style.borderRadius = '50%';
+                    firework.style.boxShadow = '0 0 10px currentColor';
+                    fireworksContainer.appendChild(firework);
+
+                    // Animate
+                    firework.animate([{
+                        transform: 'scale(1)',
+                        opacity: 1
+                    }, {
+                        transform: 'scale(3)',
+                        opacity: 0
+                    }], {
+                        duration: 1000,
+                        easing: 'ease-out'
+                    });
+
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (firework.parentNode) {
+                            firework.parentNode.removeChild(firework);
+                        }
+                    }, 1000);
+                }, i * 100);
+            }
+        }
+
+        function playCelebrationSound() {
+            // Create a simple beep sound using Web Audio API
+            try {
+                const audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1);
+            } catch (e) {
+                // Sound not supported, that's okay
+            }
+        }
+
+        function toggleSounds() {
+            soundsEnabled = !soundsEnabled;
+            if (soundsEnabled) {
+                soundToggle.textContent = "🔊 Sounds ON";
+                soundToggle.classList.remove('muted');
+            } else {
+                soundToggle.textContent = "🔇 Sounds OFF";
+                soundToggle.classList.add('muted');
+            }
+        }
+
+        // Event Listeners
+        button.addEventListener('click', handleCatch);
+        restartBtn.addEventListener('click', function() {
+            initGame();
+            startGame();
+        });
+        soundToggle.addEventListener('click', toggleSounds);
+
+        // Desktop: Mouseenter event for "hover to catch"
+        if (!isMobile) {
+            button.addEventListener('mouseenter', function(e) {
+                if (gameActive && !isGameEnded) {
+                    handleMiss();
+                }
+            });
+        }
+
+        // Mobile: Touch handling
+        gameArea.addEventListener('touchstart', function(e) {
+            if (!gameActive || isGameEnded) return;
+
+            const touch = e.touches[0];
+            const buttonRect = button.getBoundingClientRect();
+
+            // Calculate center of button
+            const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+            const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+            // Check if touch is within 20% of button center (HARD on mobile!)
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            const distance = Math.sqrt(
+                Math.pow(touchX - buttonCenterX, 2) +
+                Math.pow(touchY - buttonCenterY, 2)
+            );
+
+            // If touch is close to center, it's a catch
+            if (distance < buttonRect.width * 0.2) {
+                handleCatch();
+                e.preventDefault();
+            } else {
+                handleMiss();
+            }
+        });
+
+        // Prevent context menu
+        gameArea.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Initialize game
+        initGame();
+
+        // Easter egg: Rapid clicking
+        let clickCount = 0;
+        let lastClick = 0;
+        button.addEventListener('mousedown', function() {
+            const now = Date.now();
+            if (now - lastClick < 200) {
+                clickCount++;
+                if (clickCount >= 7) {
+                    message.textContent = "Woah! Calm down turbo! 😂";
+                    clickCount = 0;
+                }
+            } else {
+                clickCount = 1;
+            }
+            lastClick = now;
+        });
+    </script>
+</body>
+
+</html>
