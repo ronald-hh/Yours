@@ -274,6 +274,95 @@
             text-align: center;
             font-size: 0.8em;
         }
+        /* Redirection Overlay Styles */
+        
+        .redirect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .redirect-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 20px;
+            border: 4px solid #e94560;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(233, 69, 96, 0.5);
+        }
+        
+        .redirect-title {
+            color: #64ffda;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .countdown {
+            font-size: 4em;
+            color: #ff4081;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 64, 129, 0.7);
+            animation: pulse 1s infinite;
+        }
+        
+        .redirect-message {
+            color: #bb86fc;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+        
+        .cancel-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .cancel-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+        }
+        
+        .continue-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+        
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .redirect-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
         
         @media (max-width: 768px) {
             body {
@@ -320,6 +409,15 @@
             .music-toggle {
                 width: 100%;
                 justify-content: center;
+            }
+            .redirect-box {
+                padding: 20px;
+            }
+            .redirect-title {
+                font-size: 1.5em;
+            }
+            .countdown {
+                font-size: 3em;
             }
         }
         
@@ -433,15 +531,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #bfbbff, #959aff);
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 0 40px #6a6aff80;
+            box-shadow: 0 0 40px rgba(33, 150, 243, 0.5);
             z-index: 100;
             display: none;
             text-align: center;
             animation: popIn 0.3s ease-out;
             max-width: 90%;
+            border: 4px solid #2979ff;
         }
         
         @keyframes popIn {
@@ -490,9 +589,9 @@
     <div class="game-container">
         <!-- Back Button and Sound Toggle -->
         <div class="game-header">
-            <a href="dashboard.html" class="back-btn">
-                ← Back to Dashboard
-            </a>
+            <button class="back-btn" id="backBtn">
+                ← Back to Menu
+            </button>
             <h1>Catch Me If You Can 😏</h1>
             <div style="display: flex; gap: 8px;">
                 <button class="music-toggle" id="musicToggle">
@@ -506,7 +605,7 @@
 
         <!-- Troll Message -->
         <div id="troll-message">
-            Secret Challenge: Score 500 points to unlock a day (Good luck with that 😏)
+            🎯 Secret Challenge: Score 500 points to unlock Target Smash game!
         </div>
 
         <!-- Game Info -->
@@ -547,16 +646,34 @@
         <div class="instructions">
             <div class="desktop-warning">💻 <strong>Desktop:</strong> Hover cursor over button to catch</div>
             <div class="mobile-warning">📱 <strong>Mobile:</strong> Touch EXACT center of tiny button!</div>
-            <div style="margin-top: 8px; font-size: 0.85em;">⚠️ Gets <strong>INSANELY FAST</strong> at 200+ and 400+ score!</div>
+            <div style="margin-top: 8px; font-size: 0.85em;">🎯 <strong>NEW:</strong> Score 500 to unlock Target Smash!</div>
         </div>
     </div>
 
     <!-- High Score Celebration -->
     <div class="high-score" id="high-score-celebration">
-        <h2 style="color: #d32f2f; margin-bottom: 8px; font-size: 1.3em;">CONGRATULATIONS! 🫣</h2>
+        <h2 style="color: #64ffda; margin-bottom: 8px; font-size: 1.3em;">🎉 CONGRATULATIONS! 🎉</h2>
         <p style="font-size: 1em; margin-bottom: 10px;">You scored 500 points!</p>
-        <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">Just kidding... there's no unlock! 🤣</p>
-        <p style="font-size: 0.8em; color: #9e9e9e;">You're too good at this! 😭</p>
+        <p style="margin-bottom: 15px; color: #bb86fc; font-size: 0.9em;">Target Smash game unlocked! 🎯</p>
+        <p style="font-size: 0.8em; color: #ffffff; margin-bottom: 15px;">Redirecting in 5 seconds...</p>
+        <button class="continue-btn" id="goToTargetBtn" style="margin-top: 10px; padding: 8px 16px;">Go to Target Smash Now! 🚀</button>
+    </div>
+
+    <!-- Redirection Overlay -->
+    <div class="redirect-overlay" id="redirectOverlay">
+        <div class="redirect-box">
+            <div class="redirect-title">🎯 Game Unlocked! 🎯</div>
+            <div class="countdown" id="countdown">5</div>
+            <div class="redirect-message">
+                Congratulations! You've unlocked<br>
+                <strong style="color: #e94560">Target Smash</strong> game!<br>
+                <span style="font-size: 0.9em; color: #64ffda;">Get ready for a new challenge!</span>
+            </div>
+            <div class="redirect-buttons">
+                <button class="cancel-btn" id="cancelRedirect">Cancel</button>
+                <button class="continue-btn" id="continueRedirect">Continue Now</button>
+            </div>
+        </div>
     </div>
 
     <!-- Fireworks Container -->
@@ -577,8 +694,7 @@
     </audio>
     <!-- Background Music -->
     <audio id="backgroundMusic" preload="auto" loop>
-        <source src="assets/songs/SneakyGame.mp3" type="audio/mpeg">
-        <source src="assets/songs/SneakyGame.ogg" type="audio/ogg">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-waiting-667.mp3" type="audio/mpeg">
         <!-- Fallback message -->
         Your browser does not support the audio element.
     </audio>
@@ -599,6 +715,14 @@
         const fireworksContainer = document.getElementById('fireworks');
         const soundToggle = document.getElementById('soundToggle');
         const musicToggle = document.getElementById('musicToggle');
+        const backBtn = document.getElementById('backBtn');
+
+        // Redirection Elements
+        const redirectOverlay = document.getElementById('redirectOverlay');
+        const countdownDisplay = document.getElementById('countdown');
+        const cancelRedirectBtn = document.getElementById('cancelRedirect');
+        const continueRedirectBtn = document.getElementById('continueRedirect');
+        const goToTargetBtn = document.getElementById('goToTargetBtn');
 
         // Audio Elements
         const teleportSound = document.getElementById('teleportSound');
@@ -615,8 +739,8 @@
         let gameActive = false;
         let countdownTimer;
         let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        let speedMultiplier = isMobile ? 1.2 : 1; // Mobile starts faster!
-        let buttonSize = isMobile ? 0.8 : 1; // Mobile starts smaller!
+        let speedMultiplier = isMobile ? 1.2 : 1;
+        let buttonSize = isMobile ? 0.8 : 1;
         let trollShown = false;
         let highScoreCelebrated = false;
         let isGameEnded = false;
@@ -625,6 +749,11 @@
         let scoreBasedSpeedApplied = false;
         let insaneSpeedApplied = false;
         let musicStarted = false;
+
+        // Redirection Variables
+        let redirectCountdown = 5;
+        let redirectTimer = null;
+        let isRedirecting = false;
 
         // Insults & Messages
         const insults = [
@@ -642,7 +771,6 @@
             "500 points? More like 5 points!",
             "You play like you're lagging irl",
             "Did you forget how to click/tap?",
-            "Kuta lungha?? 🤣",
             "Too slow! 🐌",
             "Come on, focus!",
             "Is that all you've got?",
@@ -677,21 +805,24 @@
             level = 1;
             misses = 0;
             timeLeft = 60;
-            speedMultiplier = isMobile ? 1.2 : 1; // Reset with mobile advantage
-            buttonSize = isMobile ? 0.8 : 1; // Mobile starts smaller
+            speedMultiplier = isMobile ? 1.2 : 1;
+            buttonSize = isMobile ? 0.8 : 1;
             trollShown = false;
             isGameEnded = false;
             highScoreCelebrated = false;
             scoreBasedSpeedApplied = false;
             insaneSpeedApplied = false;
+            isRedirecting = false;
 
-            updateDisplays();
-            speedLevelDisplay.textContent = isMobile ? "MOBILE HARD" : "NORMAL";
-
-            // Hide celebrations
+            // Clear any redirect timers
+            clearInterval(redirectTimer);
+            redirectOverlay.style.display = 'none';
             highScoreCelebration.style.display = 'none';
             fireworksContainer.style.display = 'none';
             fireworksContainer.innerHTML = '';
+
+            updateDisplays();
+            speedLevelDisplay.textContent = isMobile ? "MOBILE HARD" : "NORMAL";
 
             // Clear any existing timers
             clearInterval(countdownTimer);
@@ -701,7 +832,7 @@
                 trollMessage.style.display = 'block';
                 setTimeout(() => {
                     trollMessage.style.display = 'none';
-                }, 15000); // 15 seconds
+                }, 15000);
                 trollShown = true;
             }
         }
@@ -715,9 +846,9 @@
             // Check for score-based speed increases
             checkScoreBasedSpeed();
 
-            // Check for 500 points (troll unlock)
+            // Check for 500 points to unlock next game
             if (score >= 500 && !highScoreCelebrated) {
-                celebrateHighScore();
+                unlockNextGame();
                 highScoreCelebrated = true;
             }
         }
@@ -726,8 +857,8 @@
             // Score-based speed increases
             if (score >= 200 && !scoreBasedSpeedApplied) {
                 scoreBasedSpeedApplied = true;
-                speedMultiplier += isMobile ? 1.0 : 0.8; // Bigger boost on mobile
-                buttonSize = Math.max(0.2, buttonSize - 0.3); // Shrink more
+                speedMultiplier += isMobile ? 1.0 : 0.8;
+                buttonSize = Math.max(0.2, buttonSize - 0.3);
 
                 message.textContent = "🚨 SCORE 200! SPEED BURST! 🚨";
                 speedLevelDisplay.textContent = "EXTREME";
@@ -748,8 +879,8 @@
 
             if (score >= 400 && !insaneSpeedApplied) {
                 insaneSpeedApplied = true;
-                speedMultiplier += isMobile ? 1.5 : 1.2; // INSANE boost on mobile
-                buttonSize = Math.max(0.1, buttonSize - 0.4); // SUPER TINY
+                speedMultiplier += isMobile ? 1.5 : 1.2;
+                buttonSize = Math.max(0.1, buttonSize - 0.4);
 
                 message.textContent = "💀 SCORE 400! INSANE SPEED! 💀";
                 speedLevelDisplay.textContent = "INSANE";
@@ -767,6 +898,68 @@
 
                 button.style.transform = `translate(-50%, -50%) scale(${buttonSize})`;
             }
+        }
+
+        function unlockNextGame() {
+            // Show celebration with new message
+            highScoreCelebration.style.display = 'block';
+
+            // Create fireworks
+            fireworksContainer.style.display = 'block';
+            createFireworks();
+
+            // Update troll message
+            trollMessage.textContent = "🎯 UNLOCKED! Redirecting to Target Smash in 5 seconds...";
+            trollMessage.style.display = 'block';
+            trollMessage.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+            trollMessage.style.color = "white";
+            trollMessage.style.border = "2px solid #64ffda";
+
+            // Start the redirect countdown after 2 seconds
+            setTimeout(() => {
+                startRedirectCountdown();
+            }, 2000);
+        }
+
+        function startRedirectCountdown() {
+            if (isRedirecting) return;
+
+            isRedirecting = true;
+            redirectCountdown = 5;
+            redirectOverlay.style.display = 'flex';
+            countdownDisplay.textContent = redirectCountdown;
+
+            // Start countdown
+            redirectTimer = setInterval(() => {
+                redirectCountdown--;
+                countdownDisplay.textContent = redirectCountdown;
+
+                if (redirectCountdown <= 0) {
+                    clearInterval(redirectTimer);
+                    redirectToTargetGame();
+                }
+            }, 1000);
+        }
+
+        function cancelRedirect() {
+            clearInterval(redirectTimer);
+            redirectOverlay.style.display = 'none';
+            isRedirecting = false;
+
+            // Reset troll message
+            trollMessage.textContent = "Target Smash unlocked! Click 'Go Now!' in popup 🎯";
+            trollMessage.style.background = "linear-gradient(135deg, #fff8e1, #ffecb3)";
+            trollMessage.style.color = "#ff6f00";
+            trollMessage.style.border = "2px dashed #ff9800";
+        }
+
+        function redirectToTargetGame() {
+            // Save game progress or state if needed
+            localStorage.setItem('catchMeScore', score);
+            localStorage.setItem('catchMeUnlocked', 'true');
+
+            // Redirect to Target Smash game
+            window.location.href = "game2.html";
         }
 
         function startGame() {
@@ -814,7 +1007,7 @@
         function startBackgroundMusic() {
             if (musicEnabled) {
                 backgroundMusic.currentTime = 0;
-                backgroundMusic.volume = 0.4; // Set volume to 40% so it's not too loud
+                backgroundMusic.volume = 0.4;
                 backgroundMusic.play().catch(e => {
                     console.log("Background music failed to play:", e);
                     // If music fails, try to play it on user interaction
@@ -830,8 +1023,8 @@
 
         function levelUp() {
             level++;
-            speedMultiplier += isMobile ? 1.0 : 0.8; // Bigger boost on mobile
-            buttonSize = Math.max(isMobile ? 0.15 : 0.2, buttonSize - (isMobile ? 0.25 : 0.2)); // Shrink faster on mobile
+            speedMultiplier += isMobile ? 1.0 : 0.8;
+            buttonSize = Math.max(isMobile ? 0.15 : 0.2, buttonSize - (isMobile ? 0.25 : 0.2));
 
             let speedText = "";
             if (level === 2) speedText = "FAST";
@@ -877,7 +1070,7 @@
                 const currentY = parseInt(button.style.top) || areaRect.height / 2;
 
                 const angle = Math.random() * Math.PI * 2;
-                const baseDistance = isMobile ? 100 : 80; // Longer distance on mobile
+                const baseDistance = isMobile ? 100 : 80;
                 const randomDistance = Math.random() * (isMobile ? 70 : 50);
                 const distance = (baseDistance + randomDistance) * speedMultiplier;
 
@@ -958,6 +1151,42 @@
                         particle.parentNode.removeChild(particle);
                     }
                 }, duration);
+            }
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.style.position = 'absolute';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.width = '4px';
+                    firework.style.height = '4px';
+                    firework.style.backgroundColor = ['#ff4081', '#ff9800', '#9c27b0', '#2196f3'][Math.floor(Math.random() * 4)];
+                    firework.style.borderRadius = '50%';
+                    firework.style.boxShadow = '0 0 10px currentColor';
+                    fireworksContainer.appendChild(firework);
+
+                    // Animate
+                    firework.animate([{
+                        transform: 'scale(1)',
+                        opacity: 1
+                    }, {
+                        transform: 'scale(3)',
+                        opacity: 0
+                    }], {
+                        duration: 1000,
+                        easing: 'ease-out'
+                    });
+
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (firework.parentNode) {
+                            firework.parentNode.removeChild(firework);
+                        }
+                    }, 1000);
+                }, i * 100);
             }
         }
 
@@ -1053,82 +1282,6 @@
             button.style.top = "50%";
         }
 
-        function celebrateHighScore() {
-            // Show celebration popup
-            highScoreCelebration.style.display = 'block';
-
-            // Create fireworks
-            fireworksContainer.style.display = 'block';
-            createFireworks();
-
-            // Play sound if available
-            playCelebrationSound();
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                highScoreCelebration.style.display = 'none';
-                fireworksContainer.style.display = 'none';
-                fireworksContainer.innerHTML = '';
-            }, 5000);
-        }
-
-        function createFireworks() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const firework = document.createElement('div');
-                    firework.style.position = 'absolute';
-                    firework.style.left = Math.random() * 100 + '%';
-                    firework.style.top = Math.random() * 100 + '%';
-                    firework.style.width = '4px';
-                    firework.style.height = '4px';
-                    firework.style.backgroundColor = ['#ff4081', '#ff9800', '#9c27b0', '#2196f3'][Math.floor(Math.random() * 4)];
-                    firework.style.borderRadius = '50%';
-                    firework.style.boxShadow = '0 0 10px currentColor';
-                    fireworksContainer.appendChild(firework);
-
-                    // Animate
-                    firework.animate([{
-                        transform: 'scale(1)',
-                        opacity: 1
-                    }, {
-                        transform: 'scale(3)',
-                        opacity: 0
-                    }], {
-                        duration: 1000,
-                        easing: 'ease-out'
-                    });
-
-                    // Remove after animation
-                    setTimeout(() => {
-                        if (firework.parentNode) {
-                            firework.parentNode.removeChild(firework);
-                        }
-                    }, 1000);
-                }, i * 100);
-            }
-        }
-
-        function playCelebrationSound() {
-            // Create a simple beep sound using Web Audio API
-            try {
-                const audioContext = new(window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 1);
-            } catch (e) {
-                // Sound not supported, that's okay
-            }
-        }
-
         function toggleSounds() {
             soundsEnabled = !soundsEnabled;
             if (soundsEnabled) {
@@ -1159,6 +1312,12 @@
             }
         }
 
+        function goBackToMenu() {
+            if (confirm("Are you sure you want to go back to the menu? Your progress will be lost.")) {
+                window.location.href = "dashboard.html";
+            }
+        }
+
         // Event Listeners
         button.addEventListener('click', handleCatch);
         restartBtn.addEventListener('click', function() {
@@ -1167,6 +1326,12 @@
         });
         soundToggle.addEventListener('click', toggleSounds);
         musicToggle.addEventListener('click', toggleMusic);
+        backBtn.addEventListener('click', goBackToMenu);
+
+        // Event Listeners for redirection
+        cancelRedirectBtn.addEventListener('click', cancelRedirect);
+        continueRedirectBtn.addEventListener('click', redirectToTargetGame);
+        goToTargetBtn.addEventListener('click', redirectToTargetGame);
 
         // Desktop: Mouseenter event for "hover to catch"
         if (!isMobile) {
@@ -1177,7 +1342,7 @@
             });
         }
 
-        // Mobile: Touch handling - EXTREMELY PRECISE!
+        // Mobile: Touch handling
         gameArea.addEventListener('touchstart', function(e) {
             if (!gameActive || isGameEnded) return;
 
@@ -1188,7 +1353,7 @@
             const buttonCenterX = buttonRect.left + buttonRect.width / 2;
             const buttonCenterY = buttonRect.top + buttonRect.height / 2;
 
-            // Check if touch is within 15% of button center (EXTREMELY HARD on mobile!)
+            // Check if touch is within 15% of button center
             const touchX = touch.clientX;
             const touchY = touch.clientY;
             const distance = Math.sqrt(
