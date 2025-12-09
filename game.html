@@ -92,6 +92,30 @@
             background: linear-gradient(135deg, #757575, #616161);
         }
         
+        .music-toggle {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .music-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.4);
+        }
+        
+        .music-toggle.muted {
+            background: linear-gradient(135deg, #757575, #616161);
+        }
+        
         h1 {
             color: #7b1fa2;
             font-size: 1.8em;
@@ -292,7 +316,8 @@
                 gap: 8px;
             }
             .back-btn,
-            .sound-toggle {
+            .sound-toggle,
+            .music-toggle {
                 width: 100%;
                 justify-content: center;
             }
@@ -469,9 +494,14 @@
                 ← Back to Dashboard
             </a>
             <h1>Catch Me If You Can 😏</h1>
-            <button class="sound-toggle" id="soundToggle">
-                🔊 Sounds ON
-            </button>
+            <div style="display: flex; gap: 8px;">
+                <button class="music-toggle" id="musicToggle">
+                    🎵 Music ON
+                </button>
+                <button class="sound-toggle" id="soundToggle">
+                    🔊 SFX ON
+                </button>
+            </div>
         </div>
 
         <!-- Troll Message -->
@@ -545,6 +575,13 @@
     <audio id="levelUpSound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
     </audio>
+    <!-- Background Music -->
+    <audio id="backgroundMusic" preload="auto" loop>
+        <source src="assets/songs/SneakyGame.mp3" type="audio/mpeg">
+        <source src="assets/songs/SneakyGame.ogg" type="audio/ogg">
+        <!-- Fallback message -->
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         // Game Elements
@@ -561,12 +598,14 @@
         const highScoreCelebration = document.getElementById('high-score-celebration');
         const fireworksContainer = document.getElementById('fireworks');
         const soundToggle = document.getElementById('soundToggle');
+        const musicToggle = document.getElementById('musicToggle');
 
         // Audio Elements
         const teleportSound = document.getElementById('teleportSound');
         const failSound = document.getElementById('failSound');
         const winSound = document.getElementById('winSound');
         const levelUpSound = document.getElementById('levelUpSound');
+        const backgroundMusic = document.getElementById('backgroundMusic');
 
         // Game Variables
         let score = 0;
@@ -582,8 +621,10 @@
         let highScoreCelebrated = false;
         let isGameEnded = false;
         let soundsEnabled = true;
+        let musicEnabled = true;
         let scoreBasedSpeedApplied = false;
         let insaneSpeedApplied = false;
+        let musicStarted = false;
 
         // Insults & Messages
         const insults = [
@@ -603,7 +644,8 @@
             "Did you forget how to click/tap?",
             "Kuta lungha?? 🤣",
             "Too slow! 🐌",
-            "My cat plays better! 🐱",
+            "Come on, focus!",
+            "Is that all you've got?",
             "Give up already? 😏",
             "This is sad... 😢",
             "Maybe use both hands? 🤷"
@@ -615,6 +657,8 @@
             "You're getting good!",
             "I'm getting nervous...",
             "Okay you're getting better!",
+            "Impressive!",
+            "Keep it up!",
             "You're learning my patterns!",
             "Not bad! Not bad at all!",
             "You're getting dangerous! 🤣"
@@ -752,8 +796,36 @@
                 }
             }, 1000);
 
+            // Start background music on first click
+            if (!musicStarted && musicEnabled) {
+                startBackgroundMusic();
+                musicStarted = true;
+            } else if (musicStarted && musicEnabled) {
+                // Resume music if it was paused
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+                }
+            }
+
             // Make button start running
             teleportButton();
+        }
+
+        function startBackgroundMusic() {
+            if (musicEnabled) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.volume = 0.4; // Set volume to 40% so it's not too loud
+                backgroundMusic.play().catch(e => {
+                    console.log("Background music failed to play:", e);
+                    // If music fails, try to play it on user interaction
+                    document.addEventListener('click', function tryPlayMusic() {
+                        backgroundMusic.play().catch(e => console.log("Music still failed:", e));
+                        document.removeEventListener('click', tryPlayMusic);
+                    }, {
+                        once: true
+                    });
+                });
+            }
         }
 
         function levelUp() {
@@ -966,6 +1038,11 @@
             isGameEnded = true;
             clearInterval(countdownTimer);
 
+            // Pause background music when time's up
+            if (!backgroundMusic.paused) {
+                backgroundMusic.pause();
+            }
+
             // Cleaner "Time's up" message without score and misses
             message.innerHTML = "⏰ <strong>TIME'S UP!</strong>";
             button.textContent = "TRY AGAIN?";
@@ -1055,11 +1132,30 @@
         function toggleSounds() {
             soundsEnabled = !soundsEnabled;
             if (soundsEnabled) {
-                soundToggle.textContent = "🔊 Sounds ON";
+                soundToggle.textContent = "🔊 SFX ON";
                 soundToggle.classList.remove('muted');
             } else {
-                soundToggle.textContent = "🔇 Sounds OFF";
+                soundToggle.textContent = "🔇 SFX OFF";
                 soundToggle.classList.add('muted');
+            }
+        }
+
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            if (musicEnabled) {
+                musicToggle.textContent = "🎵 Music ON";
+                musicToggle.classList.remove('muted');
+                // If game is active and music was disabled, start it
+                if (gameActive && !backgroundMusic.paused) {
+                    backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+                }
+            } else {
+                musicToggle.textContent = "🎵 Music OFF";
+                musicToggle.classList.add('muted');
+                // Pause music if it's playing
+                if (!backgroundMusic.paused) {
+                    backgroundMusic.pause();
+                }
             }
         }
 
@@ -1070,6 +1166,7 @@
             startGame();
         });
         soundToggle.addEventListener('click', toggleSounds);
+        musicToggle.addEventListener('click', toggleMusic);
 
         // Desktop: Mouseenter event for "hover to catch"
         if (!isMobile) {
@@ -1132,6 +1229,28 @@
                 clickCount = 1;
             }
             lastClick = now;
+        });
+
+        // Handle music looping
+        backgroundMusic.addEventListener('ended', function() {
+            // If game is still active and music is enabled, restart it
+            if (gameActive && musicEnabled) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play().catch(e => console.log("Music loop failed:", e));
+            }
+        });
+
+        // Handle audio context suspension on mobile
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden, pause music
+                if (!backgroundMusic.paused) {
+                    backgroundMusic.pause();
+                }
+            } else if (gameActive && musicEnabled) {
+                // Page is visible again and game is active, resume music
+                backgroundMusic.play().catch(e => console.log("Music resume failed:", e));
+            }
         });
     </script>
 </body>
