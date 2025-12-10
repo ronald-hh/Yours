@@ -835,7 +835,7 @@
 
         // Correct answers
         const CORRECT_ANSWERS = {
-            1: 'Jonny walker',
+            1: 'Johnny walker',
             2: 'TRUST',
             3: 'Excited',
             4: '', // No wrong answer
@@ -1157,18 +1157,29 @@
                 }
 
                 checkPassCode.addEventListener('click', async function() {
-                    const userAnswer = passCodeInput.value.trim().toLowerCase();
+                    const userAnswer = passCodeInput.value.trim();
                     if (!userAnswer) {
                         showFeedback(1, false, 0);
                         return;
                     }
 
-                    const correctAnswer = CORRECT_ANSWERS[1].toLowerCase();
-                    const isCorrect = userAnswer === correctAnswer;
+                    // Convert to lowercase for case-insensitive comparison
+                    const userAnswerLower = userAnswer.toLowerCase();
+
+                    // Allow multiple variations of the answer
+                    const correctVariations = [
+                        'johnny walker',
+                        'johnnywalker',
+                        'jonny walker', // Accept common typo
+                        'jonnywalker'
+                    ];
+
+                    const isCorrect = correctVariations.includes(userAnswerLower);
 
                     if (isCorrect) {
                         // Correct answer
-                        passCodeInput.classList.add('correct 🙂‍↕️');
+                        passCodeInput.classList.add('correct');
+                        passCodeInput.classList.remove('wrong');
                         passCodeInput.disabled = true;
                         checkPassCode.disabled = true;
                         completedPuzzles[0] = true;
@@ -1185,7 +1196,7 @@
                         await saveAnswerToSupabase(1, {
                             answer: userAnswer,
                             correct: true,
-                            attempts: 1
+                            attempts: wrongAttempts[1] + 1
                         });
 
                         // Update progress
@@ -1193,7 +1204,8 @@
                         showFeedback(1, true, 1);
                     } else {
                         // Wrong answer
-                        passCodeInput.classList.add('wrong 🥲');
+                        passCodeInput.classList.add('wrong');
+                        passCodeInput.classList.remove('correct');
 
                         // Reset consecutive counter
                         consecutiveCorrect = 0;
@@ -1210,13 +1222,14 @@
                         await saveAnswerToSupabase(1, {
                             answer: userAnswer,
                             correct: false,
-                            attempts: 1
+                            attempts: wrongAttempts[1]
                         });
 
                         // Clear input after delay
                         setTimeout(() => {
-                            passCodeInput.classList.remove('wrong 🥲');
+                            passCodeInput.classList.remove('wrong');
                             passCodeInput.value = '';
+                            passCodeInput.focus();
                         }, 1000);
 
                         showFeedback(1, false, wrongAttempts[1]);
@@ -1232,6 +1245,7 @@
             }
 
             // Setup Puzzle 2 (Word scramble)
+            // Setup Puzzle 2 (Word scramble) - FIXED VERSION
             function setupPuzzle2() {
                 const letterInputs = document.querySelectorAll('.letter');
                 const checkWordBtn = document.getElementById('checkWord');
@@ -1257,6 +1271,16 @@
                         if (value.length === 1 && index < letterInputs.length - 1) {
                             letterInputs[index + 1].focus();
                         }
+
+                        // Auto-submit if last letter is entered (optional)
+                        if (index === letterInputs.length - 1 && value.length === 1) {
+                            // Wait a bit then check
+                            setTimeout(() => {
+                                if (Array.from(letterInputs).every(input => input.value.length === 1)) {
+                                    checkWordBtn.click();
+                                }
+                            }, 100);
+                        }
                     });
 
                     // Arrow key navigation
@@ -1267,6 +1291,8 @@
                             letterInputs[index + 1].focus();
                         } else if (e.key === 'Backspace' && !this.value && index > 0) {
                             letterInputs[index - 1].focus();
+                        } else if (e.key === 'Enter' && Array.from(letterInputs).every(input => input.value.length === 1)) {
+                            checkWordBtn.click();
                         }
                     });
                 });
@@ -1274,8 +1300,17 @@
                 checkWordBtn.addEventListener('click', async function() {
                     // Get the word from inputs
                     const word = Array.from(letterInputs).map(input => input.value).join('').toUpperCase();
+
+                    // Check if all letters are filled
                     if (word.length !== 5) {
                         showFeedback(2, false, 0);
+                        // Highlight empty inputs
+                        letterInputs.forEach(input => {
+                            if (!input.value) {
+                                input.classList.add('wrong');
+                                setTimeout(() => input.classList.remove('wrong'), 1000);
+                            }
+                        });
                         return;
                     }
 
@@ -1284,7 +1319,8 @@
                     if (isCorrect) {
                         // Correct answer
                         letterInputs.forEach(input => {
-                            input.classList.add('correct 🙂‍↕️');
+                            input.classList.add('correct');
+                            input.classList.remove('wrong');
                             input.disabled = true;
                         });
                         checkWordBtn.disabled = true;
@@ -1297,7 +1333,7 @@
                         await saveAnswerToSupabase(2, {
                             answer: word,
                             correct: true,
-                            attempts: 1,
+                            attempts: wrongAttempts[2] + 1,
                             reason: trustReason ? trustReason.value : ''
                         });
 
@@ -1306,7 +1342,10 @@
                         showFeedback(2, true, 1);
                     } else {
                         // Wrong answer
-                        letterInputs.forEach(input => input.classList.add('wrong'));
+                        letterInputs.forEach(input => {
+                            input.classList.add('wrong');
+                            input.classList.remove('correct');
+                        });
 
                         // Reset consecutive counter
                         consecutiveCorrect = 0;
@@ -1323,13 +1362,13 @@
                         await saveAnswerToSupabase(2, {
                             answer: word,
                             correct: false,
-                            attempts: 1
+                            attempts: wrongAttempts[2]
                         });
 
                         // Clear inputs after delay
                         setTimeout(() => {
                             letterInputs.forEach(input => {
-                                input.classList.remove('wrong 🥲');
+                                input.classList.remove('wrong');
                                 input.value = '';
                             });
                             letterInputs[0].focus();
