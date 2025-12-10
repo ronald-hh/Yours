@@ -274,9 +274,9 @@
             text-align: center;
             font-size: 0.8em;
         }
-        /* Redirection Overlay Styles */
+        /* 500 Points Celebration Styles - Modified to show only message */
         
-        .redirect-overlay {
+        .points-celebration {
             position: fixed;
             top: 0;
             left: 0;
@@ -291,55 +291,30 @@
             text-align: center;
         }
         
-        .redirect-box {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        .celebration-box {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
             padding: 30px;
             border-radius: 20px;
-            border: 4px solid #e94560;
+            border: 4px solid #4CAF50;
             max-width: 400px;
             width: 90%;
-            box-shadow: 0 0 50px rgba(233, 69, 96, 0.5);
+            box-shadow: 0 0 50px rgba(76, 175, 80, 0.5);
         }
         
-        .redirect-title {
+        .celebration-title {
             color: #64ffda;
             font-size: 2em;
             margin-bottom: 15px;
         }
         
-        .countdown {
-            font-size: 4em;
-            color: #ff4081;
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 0 0 20px rgba(255, 64, 129, 0.7);
-            animation: pulse 1s infinite;
-        }
-        
-        .redirect-message {
+        .celebration-message {
             color: #bb86fc;
             margin-bottom: 25px;
             font-size: 1.1em;
+            line-height: 1.5;
         }
         
-        .cancel-btn {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #2196f3, #1976d2);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-        
-        .cancel-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
-        }
-        
-        .continue-btn {
+        .celebration-btn {
             padding: 12px 30px;
             background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
@@ -349,107 +324,69 @@
             cursor: pointer;
             font-size: 1em;
             transition: all 0.3s;
-            margin-left: 10px;
+            margin-top: 15px;
         }
         
-        .continue-btn:hover {
+        .celebration-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
         }
+        /* High Score Celebration */
         
-        .redirect-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+        .high-score {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(33, 150, 243, 0.5);
+            z-index: 100;
+            display: none;
+            text-align: center;
+            animation: popIn 0.3s ease-out;
+            max-width: 90%;
+            border: 4px solid #2979ff;
         }
         
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
             }
-            .game-container {
-                padding: 12px;
-                margin: 5px;
-                max-width: 100%;
-                border-radius: 15px;
+            70% {
+                transform: translate(-50%, -50%) scale(1.1);
             }
-            .game-area {
-                height: 250px;
-            }
-            h1 {
-                font-size: 1.6em;
-                min-width: auto;
-            }
-            #runaway-btn {
-                padding: 6px 12px;
-                font-size: 0.8em;
-                min-width: 90px;
-                border-radius: 20px;
-            }
-            .mobile-warning {
-                display: block;
-            }
-            .game-info {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .info-box {
-                padding: 6px;
-            }
-            .info-value {
-                font-size: 1.3em;
-            }
-            .game-header {
-                flex-direction: column;
-                gap: 8px;
-            }
-            .back-btn,
-            .sound-toggle,
-            .music-toggle {
-                width: 100%;
-                justify-content: center;
-            }
-            .redirect-box {
-                padding: 20px;
-            }
-            .redirect-title {
-                font-size: 1.5em;
-            }
-            .countdown {
-                font-size: 3em;
+            100% {
+                transform: translate(-50%, -50%) scale(1);
             }
         }
         
-        @media (max-width: 480px) {
-            .game-area {
-                height: 220px;
-            }
-            h1 {
-                font-size: 1.4em;
-            }
-            #runaway-btn {
-                padding: 5px 10px;
-                font-size: 0.75em;
-                min-width: 80px;
-            }
-            .info-value {
-                font-size: 1.2em;
-            }
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
         }
         
-        @media (min-width: 769px) {
-            .desktop-warning {
-                display: block;
-            }
+        .speed-burst {
+            animation: speedBurst 0.5s ease-out;
+            color: #ff1744 !important;
         }
         
-        @media (max-height: 600px) {
-            .game-area {
-                height: 200px;
+        @keyframes speedBurst {
+            0% {
+                transform: scale(1);
             }
-            .game-container {
-                padding: 10px;
+            50% {
+                transform: scale(1.5);
+            }
+            100% {
+                transform: scale(1);
             }
         }
         /* Particle effects */
@@ -524,62 +461,90 @@
                 opacity: 1;
             }
         }
-        /* High score celebration */
         
-        .high-score {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 40px rgba(33, 150, 243, 0.5);
-            z-index: 100;
-            display: none;
-            text-align: center;
-            animation: popIn 0.3s ease-out;
-            max-width: 90%;
-            border: 4px solid #2979ff;
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .game-container {
+                padding: 12px;
+                margin: 5px;
+                max-width: 100%;
+                border-radius: 15px;
+            }
+            .game-area {
+                height: 250px;
+            }
+            h1 {
+                font-size: 1.6em;
+                min-width: auto;
+            }
+            #runaway-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+                min-width: 90px;
+                border-radius: 20px;
+            }
+            .mobile-warning {
+                display: block;
+            }
+            .game-info {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .info-box {
+                padding: 6px;
+            }
+            .info-value {
+                font-size: 1.3em;
+            }
+            .game-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .back-btn,
+            .sound-toggle,
+            .music-toggle {
+                width: 100%;
+                justify-content: center;
+            }
+            .celebration-box {
+                padding: 20px;
+            }
+            .celebration-title {
+                font-size: 1.5em;
+            }
         }
         
-        @keyframes popIn {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
+        @media (max-width: 480px) {
+            .game-area {
+                height: 220px;
             }
-            70% {
-                transform: translate(-50%, -50%) scale(1.1);
+            h1 {
+                font-size: 1.4em;
             }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
+            #runaway-btn {
+                padding: 5px 10px;
+                font-size: 0.75em;
+                min-width: 80px;
+            }
+            .info-value {
+                font-size: 1.2em;
             }
         }
         
-        .fireworks {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            display: none;
+        @media (min-width: 769px) {
+            .desktop-warning {
+                display: block;
+            }
         }
         
-        .speed-burst {
-            animation: speedBurst 0.5s ease-out;
-            color: #ff1744 !important;
-        }
-        
-        @keyframes speedBurst {
-            0% {
-                transform: scale(1);
+        @media (max-height: 600px) {
+            .game-area {
+                height: 200px;
             }
-            50% {
-                transform: scale(1.5);
-            }
-            100% {
-                transform: scale(1);
+            .game-container {
+                padding: 10px;
             }
         }
     </style>
@@ -605,7 +570,7 @@
 
         <!-- Troll Message -->
         <div id="troll-message">
-            🎯 Secret Challenge: Score 500 points to unlock Target Smash game!
+            Secret Challenge: Score 500 points to unlock a day 🫠
         </div>
 
         <!-- Game Info -->
@@ -646,33 +611,19 @@
         <div class="instructions">
             <div class="desktop-warning">💻 <strong>Desktop:</strong> Hover cursor over button to catch</div>
             <div class="mobile-warning">📱 <strong>Mobile:</strong> Touch EXACT center of tiny button!</div>
-            <div style="margin-top: 8px; font-size: 0.85em;">🎯 <strong>NEW:</strong> Score 500 to unlock Target Smash!</div>
         </div>
     </div>
 
-    <!-- High Score Celebration -->
-    <div class="high-score" id="high-score-celebration">
-        <h2 style="color: #64ffda; margin-bottom: 8px; font-size: 1.3em;">🎉 CONGRATULATIONS! 🎉</h2>
-        <p style="font-size: 1em; margin-bottom: 10px;">You scored 500 points!</p>
-        <p style="margin-bottom: 15px; color: #bb86fc; font-size: 0.9em;">Target Smash game unlocked! 🎯</p>
-        <p style="font-size: 0.8em; color: #ffffff; margin-bottom: 15px;">Redirecting in 5 seconds...</p>
-        <button class="continue-btn" id="goToTargetBtn" style="margin-top: 10px; padding: 8px 16px;">Go to Target Smash Now! 🚀</button>
-    </div>
-
-    <!-- Redirection Overlay -->
-    <div class="redirect-overlay" id="redirectOverlay">
-        <div class="redirect-box">
-            <div class="redirect-title">🎯 Game Unlocked! 🎯</div>
-            <div class="countdown" id="countdown">5</div>
-            <div class="redirect-message">
-                Congratulations! You've unlocked<br>
-                <strong style="color: #e94560">Target Smash</strong> game!<br>
-                <span style="font-size: 0.9em; color: #64ffda;">Get ready for a new challenge!</span>
+    <!-- 500 Points Celebration Message -->
+    <div class="points-celebration" id="pointsCelebration">
+        <div class="celebration-box">
+            <div class="celebration-title">CONGRATULATIONS! 🥳</div>
+            <div class="celebration-message">
+                You scored <span style="color: #64ffda; font-weight: bold;">500 points! 🫠</span><br><br>
+                <span style="font-size: 0.9em; color: #ffffff;">There nothing to unlock haha <br>
+                Keep playing?</span>
             </div>
-            <div class="redirect-buttons">
-                <button class="cancel-btn" id="cancelRedirect">Cancel</button>
-                <button class="continue-btn" id="continueRedirect">Continue Now</button>
-            </div>
+            <button class="celebration-btn" id="closeCelebration">Continue Playing 🤪 </button>
         </div>
     </div>
 
@@ -694,7 +645,9 @@
     </audio>
     <!-- Background Music -->
     <audio id="backgroundMusic" preload="auto" loop>
-        <source src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-waiting-667.mp3" type="audio/mpeg">
+        <source src="assets/songs/SneakyGame.mp3" type="audio/mpeg">
+        <!-- Fallback for other audio formats (optional) -->
+        <source src="assets/songs/SneakyGame.ogg" type="audio/ogg">
         <!-- Fallback message -->
         Your browser does not support the audio element.
     </audio>
@@ -711,18 +664,14 @@
         const speedLevelDisplay = document.getElementById('speed-level');
         const restartBtn = document.getElementById('restart-btn');
         const trollMessage = document.getElementById('troll-message');
-        const highScoreCelebration = document.getElementById('high-score-celebration');
         const fireworksContainer = document.getElementById('fireworks');
         const soundToggle = document.getElementById('soundToggle');
         const musicToggle = document.getElementById('musicToggle');
         const backBtn = document.getElementById('backBtn');
 
-        // Redirection Elements
-        const redirectOverlay = document.getElementById('redirectOverlay');
-        const countdownDisplay = document.getElementById('countdown');
-        const cancelRedirectBtn = document.getElementById('cancelRedirect');
-        const continueRedirectBtn = document.getElementById('continueRedirect');
-        const goToTargetBtn = document.getElementById('goToTargetBtn');
+        // Celebration Elements (instead of redirection)
+        const pointsCelebration = document.getElementById('pointsCelebration');
+        const closeCelebrationBtn = document.getElementById('closeCelebration');
 
         // Audio Elements
         const teleportSound = document.getElementById('teleportSound');
@@ -737,23 +686,18 @@
         let misses = 0;
         let timeLeft = 60;
         let gameActive = false;
-        let countdownTimer;
+        let countdownTimer = null;
         let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         let speedMultiplier = isMobile ? 1.2 : 1;
         let buttonSize = isMobile ? 0.8 : 1;
         let trollShown = false;
-        let highScoreCelebrated = false;
         let isGameEnded = false;
         let soundsEnabled = true;
         let musicEnabled = true;
         let scoreBasedSpeedApplied = false;
         let insaneSpeedApplied = false;
         let musicStarted = false;
-
-        // Redirection Variables
-        let redirectCountdown = 5;
-        let redirectTimer = null;
-        let isRedirecting = false;
+        let celebrationShown = false;
 
         // Insults & Messages
         const insults = [
@@ -794,6 +738,12 @@
 
         // Initialize Game
         function initGame() {
+            // Clear any existing timer
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+
             message.textContent = "Click the button to start! 👇";
             button.textContent = "Click me 🤣";
             button.style.transform = "translate(-50%, -50%) scale(" + buttonSize + ")";
@@ -809,23 +759,18 @@
             buttonSize = isMobile ? 0.8 : 1;
             trollShown = false;
             isGameEnded = false;
-            highScoreCelebrated = false;
+            celebrationShown = false;
             scoreBasedSpeedApplied = false;
             insaneSpeedApplied = false;
-            isRedirecting = false;
-
-            // Clear any redirect timers
-            clearInterval(redirectTimer);
-            redirectOverlay.style.display = 'none';
-            highScoreCelebration.style.display = 'none';
-            fireworksContainer.style.display = 'none';
-            fireworksContainer.innerHTML = '';
+            gameActive = false;
 
             updateDisplays();
             speedLevelDisplay.textContent = isMobile ? "MOBILE HARD" : "NORMAL";
 
-            // Clear any existing timers
-            clearInterval(countdownTimer);
+            // Hide celebration if visible
+            pointsCelebration.style.display = 'none';
+            fireworksContainer.style.display = 'none';
+            fireworksContainer.innerHTML = '';
 
             // Show troll message for 15 seconds
             if (!trollShown) {
@@ -846,10 +791,32 @@
             // Check for score-based speed increases
             checkScoreBasedSpeed();
 
-            // Check for 500 points to unlock next game
-            if (score >= 500 && !highScoreCelebrated) {
-                unlockNextGame();
-                highScoreCelebrated = true;
+            // Check for 500 points to show celebration
+            if (score >= 500 && !celebrationShown) {
+                show500PointsCelebration();
+                celebrationShown = true;
+            }
+        }
+
+        function show500PointsCelebration() {
+            // Show celebration message
+            pointsCelebration.style.display = 'flex';
+
+            // Create fireworks
+            fireworksContainer.style.display = 'block';
+            createFireworks();
+
+            // Update troll message
+            trollMessage.textContent = "YOU DID IT! You scored 500 points! 🥳 ";
+            trollMessage.style.display = 'block';
+            trollMessage.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+            trollMessage.style.color = "white";
+            trollMessage.style.border = "2px solid #64ffda";
+
+            // Play celebration sound
+            if (soundsEnabled) {
+                winSound.currentTime = 0;
+                winSound.play().catch(e => console.log("Sound play failed:", e));
             }
         }
 
@@ -900,68 +867,6 @@
             }
         }
 
-        function unlockNextGame() {
-            // Show celebration with new message
-            highScoreCelebration.style.display = 'block';
-
-            // Create fireworks
-            fireworksContainer.style.display = 'block';
-            createFireworks();
-
-            // Update troll message
-            trollMessage.textContent = "🎯 UNLOCKED! Redirecting to Target Smash in 5 seconds...";
-            trollMessage.style.display = 'block';
-            trollMessage.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
-            trollMessage.style.color = "white";
-            trollMessage.style.border = "2px solid #64ffda";
-
-            // Start the redirect countdown after 2 seconds
-            setTimeout(() => {
-                startRedirectCountdown();
-            }, 2000);
-        }
-
-        function startRedirectCountdown() {
-            if (isRedirecting) return;
-
-            isRedirecting = true;
-            redirectCountdown = 5;
-            redirectOverlay.style.display = 'flex';
-            countdownDisplay.textContent = redirectCountdown;
-
-            // Start countdown
-            redirectTimer = setInterval(() => {
-                redirectCountdown--;
-                countdownDisplay.textContent = redirectCountdown;
-
-                if (redirectCountdown <= 0) {
-                    clearInterval(redirectTimer);
-                    redirectToTargetGame();
-                }
-            }, 1000);
-        }
-
-        function cancelRedirect() {
-            clearInterval(redirectTimer);
-            redirectOverlay.style.display = 'none';
-            isRedirecting = false;
-
-            // Reset troll message
-            trollMessage.textContent = "Target Smash unlocked! Click 'Go Now!' in popup 🎯";
-            trollMessage.style.background = "linear-gradient(135deg, #fff8e1, #ffecb3)";
-            trollMessage.style.color = "#ff6f00";
-            trollMessage.style.border = "2px dashed #ff9800";
-        }
-
-        function redirectToTargetGame() {
-            // Save game progress or state if needed
-            localStorage.setItem('catchMeScore', score);
-            localStorage.setItem('catchMeUnlocked', 'true');
-
-            // Redirect to Target Smash game
-            window.location.href = "game2.html";
-        }
-
         function startGame() {
             if (gameActive || isGameEnded) return;
 
@@ -971,9 +876,16 @@
 
             // Start game timer
             timeLeft = 60;
+            updateTimerDisplay();
+
+            // Clear any existing timer
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+
             countdownTimer = setInterval(() => {
                 timeLeft--;
-                timerDisplay.textContent = timeLeft;
+                updateTimerDisplay();
 
                 if (timeLeft <= 0) {
                     endGame();
@@ -1004,13 +916,16 @@
             teleportButton();
         }
 
+        function updateTimerDisplay() {
+            timerDisplay.textContent = timeLeft;
+        }
+
         function startBackgroundMusic() {
             if (musicEnabled) {
                 backgroundMusic.currentTime = 0;
                 backgroundMusic.volume = 0.4;
                 backgroundMusic.play().catch(e => {
                     console.log("Background music failed to play:", e);
-                    // If music fails, try to play it on user interaction
                     document.addEventListener('click', function tryPlayMusic() {
                         backgroundMusic.play().catch(e => console.log("Music still failed:", e));
                         document.removeEventListener('click', tryPlayMusic);
@@ -1265,7 +1180,12 @@
         function endGame() {
             gameActive = false;
             isGameEnded = true;
-            clearInterval(countdownTimer);
+
+            // Clear the timer
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
 
             // Pause background music when time's up
             if (!backgroundMusic.paused) {
@@ -1298,14 +1218,12 @@
             if (musicEnabled) {
                 musicToggle.textContent = "🎵 Music ON";
                 musicToggle.classList.remove('muted');
-                // If game is active and music was disabled, start it
                 if (gameActive && !backgroundMusic.paused) {
                     backgroundMusic.play().catch(e => console.log("Music play failed:", e));
                 }
             } else {
                 musicToggle.textContent = "🎵 Music OFF";
                 musicToggle.classList.add('muted');
-                // Pause music if it's playing
                 if (!backgroundMusic.paused) {
                     backgroundMusic.pause();
                 }
@@ -1322,16 +1240,21 @@
         button.addEventListener('click', handleCatch);
         restartBtn.addEventListener('click', function() {
             initGame();
-            startGame();
+            // Don't automatically start the game, wait for user to click the button
         });
         soundToggle.addEventListener('click', toggleSounds);
         musicToggle.addEventListener('click', toggleMusic);
         backBtn.addEventListener('click', goBackToMenu);
 
-        // Event Listeners for redirection
-        cancelRedirectBtn.addEventListener('click', cancelRedirect);
-        continueRedirectBtn.addEventListener('click', redirectToTargetGame);
-        goToTargetBtn.addEventListener('click', redirectToTargetGame);
+        // Event Listener for closing the celebration message
+        closeCelebrationBtn.addEventListener('click', function() {
+            pointsCelebration.style.display = 'none';
+            fireworksContainer.style.display = 'none';
+            fireworksContainer.innerHTML = '';
+
+            // Reset troll message
+            trollMessage.textContent = "You scored 500 points! I challenge you to beat 850 🫠";
+        });
 
         // Desktop: Mouseenter event for "hover to catch"
         if (!isMobile) {
@@ -1398,7 +1321,6 @@
 
         // Handle music looping
         backgroundMusic.addEventListener('ended', function() {
-            // If game is still active and music is enabled, restart it
             if (gameActive && musicEnabled) {
                 backgroundMusic.currentTime = 0;
                 backgroundMusic.play().catch(e => console.log("Music loop failed:", e));
@@ -1408,12 +1330,10 @@
         // Handle audio context suspension on mobile
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) {
-                // Page is hidden, pause music
                 if (!backgroundMusic.paused) {
                     backgroundMusic.pause();
                 }
             } else if (gameActive && musicEnabled) {
-                // Page is visible again and game is active, resume music
                 backgroundMusic.play().catch(e => console.log("Music resume failed:", e));
             }
         });
