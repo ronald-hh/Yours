@@ -1194,7 +1194,7 @@
                 }
             }
 
-            // Setup Puzzle 3 (Song memory)
+            // Setup Puzzle 3 (Song memory) - FIXED VERSION
             function setupPuzzle3() {
                 const options = document.querySelectorAll('#puzzle3 .option');
 
@@ -1206,11 +1206,14 @@
                 options.forEach(option => {
                     option.addEventListener('click', async function() {
                         const userAnswer = this.dataset.answer;
-                        const isCorrect = userAnswer === CORRECT_ANSWERS[3];
+                        console.log('Puzzle 3 answer clicked:', userAnswer, 'Correct answer:', CORRECT_ANSWERS[3]);
+
+                        // FIXED: Use trim() and case-insensitive comparison
+                        const isCorrect = userAnswer.trim() === CORRECT_ANSWERS[3];
 
                         if (isCorrect) {
                             // Correct answer
-                            this.classList.add('correct 🙂‍↕️');
+                            this.classList.add('correct');
                             completedPuzzles[2] = true;
                             options.forEach(opt => opt.disabled = true);
 
@@ -1226,7 +1229,7 @@
                             showFeedback(3, true, 1);
                         } else {
                             // Wrong answer
-                            this.classList.add('wrong 🥲');
+                            this.classList.add('wrong');
                             this.disabled = true;
 
                             // Save attempt to Supabase
@@ -1242,7 +1245,7 @@
                 });
             }
 
-            // Setup Puzzle 4 (Memory recall)
+            // Setup Puzzle 4 (Memory recall) - FIXED VERSION
             function setupPuzzle4() {
                 const messageNumber = document.getElementById('messageNumber');
                 const numberMeaning = document.getElementById('numberMeaning');
@@ -1254,22 +1257,29 @@
                 }
 
                 checkNumber.addEventListener('click', async function() {
-                    const numberAnswer = messageNumber.value.trim().toLowerCase();
+                    const numberAnswer = messageNumber.value.trim();
                     const meaningAnswer = numberMeaning.value.trim().toLowerCase();
 
                     if (!numberAnswer || !meaningAnswer) {
-                        showFeedback(4, false, 0);
+                        showFeedback(4, false, 0, "Please enter both answers!");
                         return;
                     }
 
+                    // FIXED: More flexible comparison for the meaning
                     const isNumberCorrect = numberAnswer === CORRECT_ANSWERS[4].number;
-                    const isMeaningCorrect = meaningAnswer === CORRECT_ANSWERS[4].meaning;
+
+                    // FIXED: Check for variations of "birthday"
+                    const isMeaningCorrect = meaningAnswer.includes('birthday') ||
+                        meaningAnswer.includes('birth day') ||
+                        meaningAnswer === 'bd' ||
+                        meaningAnswer === 'bday';
+
                     const isCorrect = isNumberCorrect && isMeaningCorrect;
 
                     if (isCorrect) {
                         // Correct answer
-                        messageNumber.classList.add('correct 🙂‍↕️');
-                        numberMeaning.classList.add('correct 🙂‍↕️');
+                        messageNumber.classList.add('correct');
+                        numberMeaning.classList.add('correct');
                         messageNumber.disabled = true;
                         numberMeaning.disabled = true;
                         checkNumber.disabled = true;
@@ -1300,16 +1310,25 @@
                         // Clear wrong inputs after delay
                         setTimeout(() => {
                             if (!isNumberCorrect) {
-                                messageNumber.classList.remove('wrong 🥲');
+                                messageNumber.classList.remove('wrong');
                                 messageNumber.value = '';
                             }
                             if (!isMeaningCorrect) {
-                                numberMeaning.classList.remove('wrong 🥲');
+                                numberMeaning.classList.remove('wrong');
                                 numberMeaning.value = '';
                             }
                         }, 1000);
 
-                        showFeedback(4, false, 1);
+                        let message = "Nope that's wrong! 🥲";
+                        if (!isNumberCorrect && !isMeaningCorrect) {
+                            message = "Both answers are incorrect!";
+                        } else if (!isNumberCorrect) {
+                            message = "Wrong number!";
+                        } else if (!isMeaningCorrect) {
+                            message = "Wrong meaning! Hint: It's a special day that happens every year";
+                        }
+
+                        showFeedback(4, false, 1, message);
                     }
                 });
 
@@ -1362,13 +1381,13 @@
                 });
             }
 
-            // Show feedback message (EXACTLY LIKE DAY 1)
-            function showFeedback(puzzleNum, isCorrect, attempt) {
+            // Show feedback message (EXACTLY LIKE DAY 1) - Updated for Puzzle 4
+            function showFeedback(puzzleNum, isCorrect, attempt, customMessage = null) {
                 const feedbackElement = document.getElementById(`feedback${puzzleNum}`);
                 if (!feedbackElement) return;
 
                 if (isCorrect) {
-                    feedbackElement.textContent = "Good";
+                    feedbackElement.textContent = "Good! 😊";
                     feedbackElement.className = 'feedback correct';
                     feedbackElement.style.display = 'block';
 
@@ -1380,10 +1399,12 @@
                     }
                 } else {
                     let message;
-                    if (attempt === 1) {
-                        message = "Nope that's wrong 🥲";
+                    if (customMessage) {
+                        message = customMessage;
+                    } else if (attempt === 1) {
+                        message = "Nope that's wrong! 🥲";
                     } else if (attempt === 2) {
-                        message = "What? Don't you know me?😭";
+                        message = "What? Don't you know me? 😭";
                     } else {
                         message = "Still wrong? Try harder!";
                     }
@@ -1537,7 +1558,7 @@
                 }
             }
 
-            // Restore progress from saved answers (EXACTLY LIKE DAY 1)
+            // Restore progress from saved answers (EXACTLY LIKE DAY 1) - UPDATED FOR PUZZLES 3 & 4
             function restoreProgress(savedAnswers) {
                 console.log('Restoring progress from:', savedAnswers);
 
